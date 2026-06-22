@@ -1,0 +1,6 @@
+{
+  "name": "elresala-new",
+  "description": "shadcn/ui components configuration",
+  "importPath": "./src/components",
+  "components": []
+}

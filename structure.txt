@@ -1,0 +1,209 @@
+Folder PATH listing for volume New Volume
+Volume serial number is 000000A5 C2EF:5AA9
+D:\ELRESALA-NEW\SRC
+ÃÄÄÄapp
+³   ³   globals.css
+³   ³   layout.tsx
+³   ³   page.tsx
+³   ³   
+³   ÃÄÄÄdashboard
+³   ³   ³   page.tsx
+³   ³   ³   
+³   ³   ÃÄÄÄchapters
+³   ³   ³   ³   page.tsx
+³   ³   ³   ³   
+³   ³   ³   ÃÄÄÄ[chapterId]
+³   ³   ³   ³       page.tsx
+³   ³   ³   ³       
+³   ³   ³   ÀÄÄÄ[id]
+³   ³   ³           page.tsx
+³   ³   ³           
+³   ³   ÃÄÄÄcourses
+³   ³   ³   ³   page.tsx
+³   ³   ³   ³   
+³   ³   ³   ÀÄÄÄ[courseId]
+³   ³   ³           page.tsx
+³   ³   ³           
+³   ³   ÃÄÄÄexams
+³   ³   ³   ÀÄÄÄ[examId]
+³   ³   ³           page.tsx
+³   ³   ³           
+³   ³   ÃÄÄÄlectures
+³   ³   ³       page.tsx
+³   ³   ³       
+³   ³   ÃÄÄÄplayer
+³   ³   ³       page.tsx
+³   ³   ³       
+³   ³   ÃÄÄÄprofile
+³   ³   ³       page.tsx
+³   ³   ³       
+³   ³   ÀÄÄÄsettings
+³   ³           page.tsx
+³   ³           
+³   ÃÄÄÄforgot-password
+³   ³       page.tsx
+³   ³       
+³   ÃÄÄÄlogin
+³   ³       page.tsx
+³   ³       
+³   ÀÄÄÄregister
+³           page.tsx
+³           
+ÃÄÄÄcomponents
+³   ÃÄÄÄlayout
+³   ³   ³   Footer.tsx
+³   ³   ³   Header.tsx
+³   ³   ³   
+³   ³   ÀÄÄÄfooter
+³   ³           FooterBottom.tsx
+³   ³           FooterContact.tsx
+³   ³           FooterCTA.tsx
+³   ³           FooterLinks.tsx
+³   ³           FooterSocial.tsx
+³   ³           index.ts
+³   ³           
+³   ÃÄÄÄshared
+³   ³       Logo.tsx
+³   ³       
+³   ÀÄÄÄui
+³           Container.tsx
+³           
+ÃÄÄÄconstants
+ÃÄÄÄdata
+ÃÄÄÄfeatures
+³   ÃÄÄÄauth
+³   ³   ÀÄÄÄcomponents
+³   ³       ÃÄÄÄforgot-password
+³   ³       ³       ForgotPasswordForm.tsx
+³   ³       ³       index.ts
+³   ³       ³       
+³   ³       ÃÄÄÄlogin
+³   ³       ³       index.ts
+³   ³       ³       LoginForm.tsx
+³   ³       ³       
+³   ³       ÃÄÄÄregister
+³   ³       ³       index.ts
+³   ³       ³       RegisterForm.tsx
+³   ³       ³       
+³   ³       ÀÄÄÄshared
+³   ³               AuthInput.tsx
+³   ³               AuthLayout.tsx
+³   ³               AuthLogo.tsx
+³   ³               AuthSide.tsx
+³   ³               
+³   ÃÄÄÄdashboard
+³   ³   ÃÄÄÄchapters
+³   ³   ³       ChapterCard.tsx
+³   ³   ³       ChaptersPage.tsx
+³   ³   ³       index.ts
+³   ³   ³       
+³   ³   ÃÄÄÄcourses
+³   ³   ³       CourseCard.tsx
+³   ³   ³       CoursesPage.tsx
+³   ³   ³       index.ts
+³   ³   ³       
+³   ³   ÃÄÄÄexams
+³   ³   ÃÄÄÄhome
+³   ³   ³       ContinueCard.tsx
+³   ³   ³       DashboardHome.tsx
+³   ³   ³       index.ts
+³   ³   ³       ProgressCard.tsx
+³   ³   ³       StatCard.tsx
+³   ³   ³       StatsGrid.tsx
+³   ³   ³       WelcomeCard.tsx
+³   ³   ³       
+³   ³   ÃÄÄÄlayout
+³   ³   ³       DashboardLayout.tsx
+³   ³   ³       DashboardSidebar.tsx
+³   ³   ³       DashboardTopbar.tsx
+³   ³   ³       index.ts
+³   ³   ³       
+³   ³   ÃÄÄÄlectures
+³   ³   ³       ContinueWatching.tsx
+³   ³   ³       index.ts
+³   ³   ³       LectureItem.tsx
+³   ³   ³       LecturesPage.tsx
+³   ³   ³       ResourcesCard.tsx
+³   ³   ³       
+³   ³   ÃÄÄÄplayer
+³   ³   ³   ³   index.ts
+³   ³   ³   ³   LessonInfo.tsx
+³   ³   ³   ³   NotesCard.tsx
+³   ³   ³   ³   QuestionsCard.tsx
+³   ³   ³   ³   VideoControls.tsx
+³   ³   ³   ³   VideoHeader.tsx
+³   ³   ³   ³   VideoNavigation.tsx
+³   ³   ³   ³   VideoPlayer.tsx
+³   ³   ³   ³   VideoPlayerPage.tsx
+³   ³   ³   ³   VideoProgress.tsx
+³   ³   ³   ³   VideoResources.tsx
+³   ³   ³   ³   VideoSidebar.tsx
+³   ³   ³   ³   
+³   ³   ³   ÃÄÄÄhooks
+³   ³   ³   ³       useProgress.ts
+³   ³   ³   ³       useVideo.ts
+³   ³   ³   ³       
+³   ³   ³   ÀÄÄÄtypes
+³   ³   ³           player.ts
+³   ³   ³           
+³   ³   ÃÄÄÄprofile
+³   ³   ÃÄÄÄshared
+³   ³   ÀÄÄÄtypes
+³   ³           dashboard.ts
+³   ³           
+³   ÀÄÄÄhome
+³       ÃÄÄÄcomponents
+³       ³   ³   Features.tsx
+³       ³   ³   
+³       ³   ÃÄÄÄcta
+³       ³   ³       CTA.tsx
+³       ³   ³       index.ts
+³       ³   ³       
+³       ³   ÃÄÄÄfaq
+³       ³   ³       FAQ.tsx
+³       ³   ³       FAQItem.tsx
+³       ³   ³       index.ts
+³       ³   ³       
+³       ³   ÃÄÄÄhero
+³       ³   ³       Hero.tsx
+³       ³   ³       HeroBackground.tsx
+³       ³   ³       HeroBadge.tsx
+³       ³   ³       HeroButtons.tsx
+³       ³   ³       HeroContent.tsx
+³       ³   ³       HeroImage.tsx
+³       ³   ³       HeroStats.tsx
+³       ³   ³       index.ts
+³       ³   ³       
+³       ³   ÃÄÄÄstatistics
+³       ³   ³       index.ts
+³       ³   ³       StatisticCard.tsx
+³       ³   ³       Statistics.tsx
+³       ³   ³       
+³       ³   ÃÄÄÄsubjects
+³       ³   ³       index.ts
+³       ³   ³       SubjectCard.tsx
+³       ³   ³       Subjects.tsx
+³       ³   ³       
+³       ³   ÃÄÄÄtestimonials
+³       ³   ³       index.ts
+³       ³   ³       TestimonialCard.tsx
+³       ³   ³       Testimonials.tsx
+³       ³   ³       
+³       ³   ÀÄÄÄwhy-us
+³       ³           index.ts
+³       ³           WhyCard.tsx
+³       ³           WhyUs.tsx
+³       ³           
+³       ÃÄÄÄhooks
+³       ÀÄÄÄtypes
+ÃÄÄÄhooks
+ÃÄÄÄlib
+³       utils.ts
+³       
+ÃÄÄÄproviders
+³       Providers.tsx
+³       
+ÃÄÄÄservices
+ÃÄÄÄstyles
+ÃÄÄÄtypes
+ÀÄÄÄutils
