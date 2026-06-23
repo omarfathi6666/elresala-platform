@@ -1,5 +1,7 @@
 import { apiHandler } from "@/lib/api/api-handler";
 import { fail, success } from "@/lib/api/api-response";
+import { createToken } from "@/lib/auth/jwt";
+import { setSession } from "@/lib/auth/session";
 import { StudentService } from "@/services/student/student.service";
 
 export async function GET() {
@@ -23,6 +25,14 @@ export async function POST(request: Request) {
       phone,
       password,
     });
+
+    const token = await createToken({
+      id: student.id,
+      phone: student.phone,
+      role: "STUDENT",
+    });
+
+    await setSession(token);
 
     return success(
       {

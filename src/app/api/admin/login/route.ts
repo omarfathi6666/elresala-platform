@@ -26,7 +26,7 @@ export async function POST(request: Request) {
       password,
     });
 
-    const token = createToken({
+    const token = await createToken({
       id: admin.id,
       email: admin.email,
       role: "ADMIN",
