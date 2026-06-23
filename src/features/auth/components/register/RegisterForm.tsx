@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 import { useForm } from "react-hook-form";
 
@@ -10,7 +11,7 @@ type RegisterFormData = {
   fullName: string;
   phone: string;
   email: string;
-  province: string;
+  governorate: string;
   grade: string;
   parentPhone: string;
   password: string;
@@ -23,9 +24,37 @@ export default function RegisterForm() {
     handleSubmit,
     formState: { errors },
   } = useForm<RegisterFormData>();
+  const [message, setMessage] = useState("");
+  const [error, setError] = useState("");
 
-  const onSubmit = (data: RegisterFormData) => {
-    console.log(data);
+  const onSubmit = async (data: RegisterFormData) => {
+    setMessage("");
+    setError("");
+
+    const response = await fetch("/api/student/register", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        name: data.fullName,
+        email: data.email,
+        password: data.password,
+        phone: data.phone,
+        parentPhone: data.parentPhone,
+        governorate: data.governorate,
+        grade: data.grade,
+      }),
+    });
+
+    const result = await response.json();
+
+    if (!response.ok) {
+      setError(result.message || "حدث خطأ أثناء التسجيل");
+      return;
+    }
+
+    setMessage("تم إنشاء الحساب بنجاح");
   };
 
   return (
@@ -74,7 +103,7 @@ export default function RegisterForm() {
           </label>
 
           <select
-            {...register("province", {
+            {...register("governorate", {
               required: "المحافظة مطلوبة",
             })}
             className="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 outline-none transition focus:border-blue-600 focus:ring-4 focus:ring-blue-100"
@@ -110,9 +139,9 @@ export default function RegisterForm() {
             <option>جنوب سيناء</option>
           </select>
 
-          {errors.province && (
+          {errors.governorate && (
             <p className="text-sm text-red-500">
-              {errors.province.message}
+              {errors.governorate.message}
             </p>
           )}
         </div>
@@ -173,23 +202,35 @@ export default function RegisterForm() {
           })}
         />
 
-        <button
-          type="submit"
-          className="w-full rounded-2xl bg-blue-600 py-3 font-bold text-white transition hover:bg-blue-700"
-        >
-          إنشاء الحساب
-        </button>
+      {error && (
+        <div className="rounded bg-red-100 p-3 text-red-600">
+          {error}
+        </div>
+      )}
 
-        <p className="text-center text-sm text-slate-600">
-          لديك حساب بالفعل؟{" "}
-          <Link
-            href="/login"
-            className="font-semibold text-blue-600 hover:underline"
-          >
-            تسجيل الدخول
-          </Link>
-        </p>
-      </form>
-    </>
-  );
+      {message && (
+        <div className="rounded bg-green-100 p-3 text-green-600">
+          {message}
+        </div>
+      )}
+
+      <button
+        type="submit"
+        className="w-full rounded-2xl bg-blue-600 py-3 font-bold text-white transition hover:bg-blue-700"
+      >
+        إنشاء الحساب
+      </button>
+
+      <p className="text-center text-sm text-slate-600">
+        لديك حساب بالفعل؟{" "}
+        <Link
+          href="/login"
+          className="font-semibold text-blue-600 hover:underline"
+        >
+          تسجيل الدخول
+        </Link>
+      </p>
+    </form>
+  </>
+); 
 }
