@@ -9,6 +9,11 @@ export interface CreateCodesDto {
   lectureId?: string;
 }
 
+export interface ActivateCodeDto {
+  studentId: string;
+  code: string;
+}
+
 function generateCode(): string {
   const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
 
@@ -54,5 +59,82 @@ export class CodeService {
     await CodeRepository.createMany(codes);
 
     return codes;
+  }
+
+  static async hasActiveSubscription(
+    studentId: string
+  ) {
+    const count =
+      await CodeRepository.countActiveSubscriptionsByStudentId(
+        studentId,
+        new Date()
+      );
+
+    return count > 0;
+  }
+
+  static async activateForStudent({
+    studentId,
+    code,
+  }: ActivateCodeDto) {
+    const normalizedCode = code.trim().toUpperCase();
+
+    const subscriptionCode =
+      await CodeRepository.findByCodeForActivation(
+        normalizedCode
+      );
+
+    if (!subscriptionCode) {
+      throw new Error("كود الاشتراك غير موجود");
+    }
+
+    const now = new Date();
+
+    if (
+      subscriptionCode.expiresAt &&
+      subscriptionCode.expiresAt < now
+    ) {
+      throw new Error("كود الاشتراك منتهي الصلاحية");
+    }
+
+    if (
+      subscriptionCode.studentId &&
+      subscriptionCode.studentId !== studentId
+    ) {
+      throw new Error(
+        "هذا الكود مرتبط بحساب طالب آخر"
+      );
+    }
+
+    if (
+      subscriptionCode.usedCount >=
+      subscriptionCode.maxDevices
+    ) {
+      throw new Error(
+        "تم الوصول للحد الأقصى للأجهزة لهذا الكود"
+      );
+    }
+
+    const activated = await CodeRepository.activateCodeById(
+      subscriptionCode.id,
+      studentId,
+      subscriptionCode.usedAt ? null : now
+    );
+
+    const activationScope = subscriptionCode as unknown as {
+      courseId: string;
+      chapterId?: string | null;
+      lectureId?: string | null;
+    };
+
+    return {
+      id: activated.id,
+      code: activated.code,
+      scope: {
+        courseId: activationScope.courseId,
+        chapterId: activationScope.chapterId ?? null,
+        lectureId: activationScope.lectureId ?? null,
+      },
+    };
   }
 }

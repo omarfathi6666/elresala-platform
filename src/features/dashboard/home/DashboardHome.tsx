@@ -1,6 +1,8 @@
 import { verifyToken } from "@/lib/auth/jwt";
 import { getSession } from "@/lib/auth/session";
+import { CodeService } from "@/services/code";
 import { StudentService } from "@/services/student/student.service";
+import ActivationWelcome from "./ActivationWelcome";
 import WelcomeCard from "./WelcomeCard";
 import StatsGrid from "./StatsGrid";
 import ContinueCard from "./ContinueCard";
@@ -13,12 +15,18 @@ export default async function DashboardHome() {
   let watchedLectures = 0;
   let examsCount = 0;
   let progress = 0;
+  let hasActiveSubscription = false;
 
   if (token) {
     try {
       const payload = await verifyToken(token);
 
       if (payload.role === "STUDENT") {
+        hasActiveSubscription =
+          await CodeService.hasActiveSubscription(
+            payload.id
+          );
+
         const summary =
           await StudentService.getDashboardSummary(
             payload.id
@@ -32,6 +40,14 @@ export default async function DashboardHome() {
     } catch {
       // Keep safe zero/default values if token is invalid.
     }
+  }
+
+  if (!hasActiveSubscription) {
+    return (
+      <div className="flex min-h-[calc(100vh-12rem)] items-center justify-center">
+        <ActivationWelcome studentName={studentName} />
+      </div>
+    );
   }
 
   return (

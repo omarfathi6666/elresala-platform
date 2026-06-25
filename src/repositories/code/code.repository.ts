@@ -38,6 +38,19 @@ class CodeRepository {
     });
   }
 
+  async findByCodeForActivation(code: string) {
+    return prisma.code.findUnique({
+      where: {
+        code,
+      },
+      include: {
+        course: true,
+        chapter: true,
+        lecture: true,
+      },
+    });
+  }
+
   async isCodeExists(code: string) {
     const existing = await prisma.code.findUnique({
       where: {
@@ -49,6 +62,51 @@ class CodeRepository {
     });
 
     return Boolean(existing);
+  }
+
+  async countActiveSubscriptionsByStudentId(
+    studentId: string,
+    now: Date
+  ) {
+    return prisma.code.count({
+      where: {
+        studentId,
+        OR: [
+          {
+            expiresAt: null,
+          },
+          {
+            expiresAt: {
+              gte: now,
+            },
+          },
+        ],
+      },
+    });
+  }
+
+  async activateCodeById(
+    id: string,
+    studentId: string,
+    setUsedAt: Date | null
+  ) {
+    return prisma.code.update({
+      where: {
+        id,
+      },
+      data: {
+        studentId,
+        isUsed: true,
+        usedCount: {
+          increment: 1,
+        },
+        ...(setUsedAt
+          ? {
+              usedAt: setUsedAt,
+            }
+          : {}),
+      },
+    });
   }
 
   async delete(id: string) {
