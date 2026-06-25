@@ -2,6 +2,12 @@
 
 import { useEffect, useState } from "react";
 
+interface ChapterInitialData {
+  title: string;
+  order: number;
+  courseId: string;
+}
+
 interface Course {
   id: string;
   title: string;
@@ -9,9 +15,15 @@ interface Course {
 
 interface Props {
   onSuccess?: () => void;
+  chapterId?: string;
+  initialData?: ChapterInitialData;
 }
 
-export default function ChapterForm({ onSuccess }: Props) {
+export default function ChapterForm({
+  onSuccess,
+  chapterId,
+  initialData,
+}: Props) {
   const [courses, setCourses] = useState<Course[]>([]);
   const [courseId, setCourseId] = useState("");
   const [title, setTitle] = useState("");
@@ -23,11 +35,21 @@ export default function ChapterForm({ onSuccess }: Props) {
       .then((r) => setCourses(r.data ?? []));
   }, []);
 
+  useEffect(() => {
+    if (!initialData) {
+      return;
+    }
+
+    setTitle(initialData.title);
+    setOrder(initialData.order);
+    setCourseId(initialData.courseId);
+  }, [initialData]);
+
   async function submit(e: React.FormEvent) {
     e.preventDefault();
 
-    const res = await fetch("/api/admin/chapters", {
-      method: "POST",
+    const res = await fetch(chapterId ? `/api/admin/chapters/${chapterId}` : "/api/admin/chapters", {
+      method: chapterId ? "PUT" : "POST",
       headers: {
         "Content-Type": "application/json",
       },
@@ -91,7 +113,7 @@ export default function ChapterForm({ onSuccess }: Props) {
       <button
         className="w-full rounded-lg bg-blue-600 py-3 text-white"
       >
-        حفظ الفصل
+        {chapterId ? "تعديل الفصل" : "حفظ الفصل"}
       </button>
 
     </form>

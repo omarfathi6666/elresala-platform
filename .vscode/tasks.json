@@ -1,0 +1,15 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "build-exitcode-only",
+			"type": "shell",
+			"command": "cmd",
+			"args": [
+				"/c",
+				"npm.cmd run build >nul 2>nul & echo EXITCODE:%ERRORLEVEL%"
+			],
+			"isBackground": false
+		}
+	]
+}

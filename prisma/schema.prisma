@@ -50,6 +50,7 @@ model Chapter {
   createdAt DateTime  @default(now())
   course    Course    @relation(fields: [courseId], references: [id], onDelete: Cascade)
   lectures  Lecture[]
+  codes     Code[]
 }
 
 model Lecture {
@@ -65,6 +66,7 @@ model Lecture {
   createdAt   DateTime @default(now())
   exams       Exam[]
   chapter     Chapter  @relation(fields: [chapterId], references: [id], onDelete: Cascade)
+  codes       Code[]
 }
 
 model Exam {
@@ -97,16 +99,33 @@ model Question {
 }
 
 model Code {
-  id        String    @id @default(cuid())
-  code      String    @unique
-  isUsed    Boolean   @default(false)
-  usedAt    DateTime?
-  expiresAt DateTime?
-  studentId String?
-  courseId  String
-  createdAt DateTime  @default(now())
-  course    Course    @relation(fields: [courseId], references: [id])
-  student   Student?  @relation(fields: [studentId], references: [id])
+  id          String    @id @default(cuid())
+
+  code        String    @unique
+
+  courseId    String
+  course      Course    @relation(fields: [courseId], references: [id])
+
+  chapterId   String?
+  chapter     Chapter?  @relation(fields: [chapterId], references: [id], onDelete: SetNull)
+
+  lectureId   String?
+  lecture     Lecture?  @relation(fields: [lectureId], references: [id], onDelete: SetNull)
+
+  studentId   String?
+  student     Student?  @relation(fields: [studentId], references: [id])
+
+  isUsed      Boolean   @default(false)
+
+  usedCount   Int       @default(0)
+
+  maxDevices  Int       @default(1)
+
+  expiresAt   DateTime?
+
+  createdAt   DateTime  @default(now())
+
+  usedAt      DateTime?
 }
 
 model ExamResult {

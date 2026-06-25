@@ -2,12 +2,20 @@ interface CodeCardProps {
   code: string;
   course: string;
   status: "available" | "used";
+  maxDevices: number;
+  expiresAt: string | null;
+  usedCount: number;
+  createdAt: string;
 }
 
 export default function CodeCard({
   code,
   course,
   status,
+  maxDevices,
+  expiresAt,
+  usedCount,
+  createdAt,
 }: CodeCardProps) {
   return (
     <div className="rounded-3xl bg-white p-6 shadow-sm">
@@ -17,6 +25,18 @@ export default function CodeCard({
 
       <p className="mt-3 text-slate-500">
         {course}
+      </p>
+
+      <p className="mt-2 text-sm text-slate-500">
+        عدد الأجهزة: {maxDevices} • مرات الاستخدام: {usedCount}
+      </p>
+
+      <p className="mt-1 text-sm text-slate-500">
+        تاريخ الإنشاء: {new Date(createdAt).toLocaleDateString("ar-EG")}
+      </p>
+
+      <p className="mt-1 text-sm text-slate-500">
+        الانتهاء: {expiresAt ? new Date(expiresAt).toLocaleDateString("ar-EG") : "غير محدد"}
       </p>
 
       <span

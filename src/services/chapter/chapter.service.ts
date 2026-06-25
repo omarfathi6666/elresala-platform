@@ -1,4 +1,4 @@
-import { prisma } from "@/lib/db/prisma";
+import { ChapterRepository } from "@/repositories/chapter";
 
 export interface CreateChapterDto {
   title: string;
@@ -8,20 +8,25 @@ export interface CreateChapterDto {
 
 export class ChapterService {
   static async getAll() {
-    return prisma.chapter.findMany({
-      include: {
-        course: true,
-        lectures: true,
-      },
-      orderBy: {
-        order: "asc",
-      },
-    });
+    return ChapterRepository.findAll();
   }
 
   static async create(data: CreateChapterDto) {
-    return prisma.chapter.create({
-      data,
-    });
+    return ChapterRepository.create(data);
+  }
+
+  static async getById(id: string) {
+    return ChapterRepository.findById(id);
+  }
+
+  static async update(
+    id: string,
+    data: CreateChapterDto
+  ) {
+    return ChapterRepository.update(id, data);
+  }
+
+  static async delete(id: string) {
+    return ChapterRepository.delete(id);
   }
 }

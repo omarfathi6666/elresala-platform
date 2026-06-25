@@ -1,0 +1,1 @@
+export { default as CourseRepository } from "./course.repository";

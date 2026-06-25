@@ -1,4 +1,7 @@
+"use client";
+
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import {
   PlayCircle,
   FileText,
@@ -14,6 +17,8 @@ interface LectureCardProps {
   duration: string;
   hasPdf: boolean;
   hasExam: boolean;
+  onEdit?: () => void;
+  onDelete?: () => void;
 }
 
 export default function LectureCard({
@@ -22,9 +27,16 @@ export default function LectureCard({
   duration,
   hasPdf,
   hasExam,
+  onEdit,
+  onDelete,
 }: LectureCardProps) {
+  const router = useRouter();
+
   return (
-    <div className="rounded-3xl bg-white p-6 shadow-sm transition hover:shadow-lg">
+    <div
+      className="rounded-3xl bg-white p-6 shadow-sm transition hover:shadow-lg cursor-pointer"
+      onClick={() => router.push(`/admin/lectures/${id}`)}
+    >
 
       <div className="flex items-center gap-4">
 
@@ -73,11 +85,23 @@ export default function LectureCard({
           إدارة
         </Link>
 
-        <button className="rounded-xl border p-3">
+        <button
+          className="rounded-xl border p-3"
+          onClick={(event) => {
+            event.stopPropagation();
+            onEdit?.();
+          }}
+        >
           <Pencil size={18} />
         </button>
 
-        <button className="rounded-xl border border-red-300 text-red-600 p-3">
+        <button
+          className="rounded-xl border border-red-300 text-red-600 p-3"
+          onClick={(event) => {
+            event.stopPropagation();
+            onDelete?.();
+          }}
+        >
           <Trash2 size={18} />
         </button>
 

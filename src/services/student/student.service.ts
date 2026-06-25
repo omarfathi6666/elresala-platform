@@ -16,6 +16,25 @@ export interface StudentLoginDto {
   password: string;
 }
 
+export interface StudentDashboardSummary {
+  studentName: string;
+  watchedLectures: number;
+  examsCount: number;
+  progress: number;
+}
+
+export interface StudentProfileSummary {
+  name: string;
+  phone: string;
+  parentPhone: string;
+  governorate: string;
+  grade: string;
+  email: string;
+  watchedLectures: number;
+  examsCount: number;
+  averageResult: number;
+}
+
 export class StudentService {
   static async register(data: StudentRegisterDto) {
     if (data.email) {
@@ -60,5 +79,78 @@ export class StudentService {
     }
 
     return student;
+  }
+
+  static async getDashboardSummary(
+    studentId: string
+  ): Promise<StudentDashboardSummary> {
+    const student = await StudentRepository.findById(studentId);
+
+    if (!student) {
+      throw new Error("الطالب غير موجود");
+    }
+
+    const examsCount =
+      await StudentRepository.countExamResultsByStudentId(
+        studentId
+      );
+
+    return {
+      studentName: student.name,
+      watchedLectures: 0,
+      examsCount,
+      progress: 0,
+    };
+  }
+
+  static async getProfileSummary(
+    studentId: string
+  ): Promise<StudentProfileSummary> {
+    const profile =
+      await StudentRepository.findProfileById(
+        studentId
+      );
+
+    if (!profile) {
+      throw new Error("الطالب غير موجود");
+    }
+
+    const examsCount =
+      await StudentRepository.countExamResultsByStudentId(
+        studentId
+      );
+
+    const results =
+      await StudentRepository.findExamResultsByStudentId(
+        studentId
+      );
+
+    const averageResult =
+      results.length === 0
+        ? 0
+        : Math.round(
+            results.reduce((sum, item) => {
+              if (!item.total || item.total <= 0) {
+                return sum;
+              }
+
+              return (
+                sum +
+                (item.score / item.total) * 100
+              );
+            }, 0) / results.length
+          );
+
+    return {
+      name: profile.name,
+      phone: profile.phone,
+      parentPhone: profile.parentPhone ?? "غير مضاف",
+      governorate: profile.governorate,
+      grade: profile.grade,
+      email: profile.email ?? "غير مضاف",
+      watchedLectures: 0,
+      examsCount,
+      averageResult,
+    };
   }
 }

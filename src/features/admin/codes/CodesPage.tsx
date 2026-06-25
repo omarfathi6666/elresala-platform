@@ -1,20 +1,41 @@
+"use client";
+
+import { useEffect, useState } from "react";
 import CodeCard from "./CodeCard";
 import CreateCodesForm from "./CreateCodesForm";
 
-const codes = [
-  {
-    code: "RS-8K2P-X91A",
-    course: "الأحياء",
-    status: "available" as const,
-  },
-  {
-    code: "RS-1L8Q-T4MN",
-    course: "الأحياء",
-    status: "used" as const,
-  },
-];
+interface CodeItem {
+  id: string;
+  code: string;
+  course: {
+    title: string;
+  };
+  maxDevices: number;
+  expiresAt: string | null;
+  usedCount: number;
+  isUsed: boolean;
+  createdAt: string;
+}
 
 export default function CodesPage() {
+  const [codes, setCodes] = useState<CodeItem[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  async function loadCodes() {
+    const response = await fetch("/api/admin/codes");
+    const result = await response.json();
+
+    if (result.success) {
+      setCodes(result.data ?? []);
+    }
+
+    setLoading(false);
+  }
+
+  useEffect(() => {
+    loadCodes();
+  }, []);
+
   return (
     <div className="space-y-8">
 
@@ -22,16 +43,26 @@ export default function CodesPage() {
         أكواد الاشتراك
       </h1>
 
-      <CreateCodesForm />
+      <CreateCodesForm onSuccess={loadCodes} />
 
-      <div className="grid gap-6 lg:grid-cols-2">
-        {codes.map((code) => (
-          <CodeCard
-            key={code.code}
-            {...code}
-          />
-        ))}
-      </div>
+      {loading ? (
+        <div>جاري التحميل...</div>
+      ) : (
+        <div className="grid gap-6 lg:grid-cols-2">
+          {codes.map((code) => (
+            <CodeCard
+              key={code.id}
+              code={code.code}
+              course={code.course.title}
+              status={code.isUsed ? "used" : "available"}
+              maxDevices={code.maxDevices}
+              expiresAt={code.expiresAt}
+              usedCount={code.usedCount}
+              createdAt={code.createdAt}
+            />
+          ))}
+        </div>
+      )}
 
     </div>
   );

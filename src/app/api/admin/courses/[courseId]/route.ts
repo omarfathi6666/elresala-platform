@@ -1,6 +1,6 @@
 import { apiHandler } from "@/lib/api/api-handler";
 import { success, fail } from "@/lib/api/api-response";
-import { prisma } from "@/lib/db/prisma";
+import { CourseService } from "@/services/course/course.service";
 
 interface Params {
   params: Promise<{
@@ -24,16 +24,14 @@ export async function PUT(
       return fail("عنوان الكورس مطلوب", 400);
     }
 
-    const course = await prisma.course.update({
-      where: {
-        id: courseId,
-      },
-      data: {
+    const course = await CourseService.updateCourse(
+      courseId,
+      {
         title,
         description,
         order,
-      },
-    });
+      }
+    );
 
     return success(course, "تم تعديل الكورس");
   });
@@ -46,11 +44,7 @@ export async function DELETE(
   return apiHandler(async () => {
     const { courseId } = await params;
 
-    await prisma.course.delete({
-      where: {
-        id: courseId,
-      },
-    });
+    await CourseService.deleteCourse(courseId);
 
     return success(null, "تم حذف الكورس");
   });

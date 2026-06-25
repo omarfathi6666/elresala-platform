@@ -4,15 +4,20 @@ interface Props {
   icon: ReactNode;
   title: string;
   description: string;
+  onClick?: () => void;
 }
 
 export default function LectureActionCard({
   icon,
   title,
   description,
+  onClick,
 }: Props) {
   return (
-    <button className="rounded-3xl bg-white p-6 text-right shadow-sm transition hover:shadow-lg hover:border-blue-500 border">
+    <button
+      onClick={onClick}
+      className="rounded-3xl bg-white p-6 text-right shadow-sm transition hover:shadow-lg hover:border-blue-500 border"
+    >
 
       <div className="mb-5">
         {icon}

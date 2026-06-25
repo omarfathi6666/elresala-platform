@@ -1,19 +1,39 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
+
+interface CourseInitialData {
+  title: string;
+  description?: string | null;
+  order: number;
+}
 
 interface CourseFormProps {
   onSuccess?: () => void;
+  courseId?: string;
+  initialData?: CourseInitialData;
 }
 
 export default function CourseForm({
   onSuccess,
+  courseId,
+  initialData,
 }: CourseFormProps) {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [order, setOrder] = useState(1);
 
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (!initialData) {
+      return;
+    }
+
+    setTitle(initialData.title);
+    setDescription(initialData.description || "");
+    setOrder(initialData.order);
+  }, [initialData]);
 
   async function handleSubmit(
     e: React.FormEvent
@@ -24,9 +44,11 @@ export default function CourseForm({
 
     try {
       const response = await fetch(
-        "/api/admin/courses",
+        courseId
+          ? `/api/admin/courses/${courseId}`
+          : "/api/admin/courses",
         {
-          method: "POST",
+          method: courseId ? "PUT" : "POST",
           headers: {
             "Content-Type":
               "application/json",
@@ -97,7 +119,9 @@ export default function CourseForm({
       >
         {loading
           ? "جاري الحفظ..."
-          : "حفظ المادة"}
+          : courseId
+            ? "تعديل المادة"
+            : "حفظ المادة"}
       </button>
     </form>
   );

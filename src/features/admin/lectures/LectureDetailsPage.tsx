@@ -1,3 +1,7 @@
+"use client";
+
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import {
   Upload,
   FileText,
@@ -6,21 +10,68 @@ import {
   EyeOff,
 } from "lucide-react";
 
+import ExamCard from "@/features/admin/exams/ExamCard";
 import LectureStatusCard from "./LectureStatusCard";
 import LectureActionCard from "./LectureActionCard";
 
-export default function LectureDetailsPage() {
+interface Exam {
+  id: string;
+  title: string;
+  duration: number;
+  questions: unknown[];
+}
+
+interface LectureDetails {
+  id: string;
+  title: string;
+  videoUrl: string | null;
+  pdfUrl: string | null;
+  isPublished: boolean;
+  chapter: {
+    title: string;
+    course: {
+      title: string;
+    };
+  };
+  exams: Exam[];
+}
+
+interface LectureDetailsPageProps {
+  lectureId: string;
+}
+
+export default function LectureDetailsPage({
+  lectureId,
+}: LectureDetailsPageProps) {
+  const router = useRouter();
+  const [lecture, setLecture] =
+    useState<LectureDetails | null>(null);
+
+  useEffect(() => {
+    fetch(`/api/admin/lectures/${lectureId}`)
+      .then((response) => response.json())
+      .then((result) => {
+        if (result.success) {
+          setLecture(result.data);
+        }
+      });
+  }, [lectureId]);
+
+  if (!lecture) {
+    return <div>جاري التحميل...</div>;
+  }
+
   return (
     <div className="space-y-8">
 
       <div>
 
         <h1 className="text-4xl font-black">
-          الدعامة في النبات
+          {lecture.title}
         </h1>
 
         <p className="mt-2 text-slate-500">
-          الأحياء • الفصل الأول
+          {lecture.chapter.course.title} • {lecture.chapter.title}
         </p>
 
       </div>
@@ -29,26 +80,26 @@ export default function LectureDetailsPage() {
 
         <LectureStatusCard
           title="الفيديو"
-          value="مرفوع"
-          color="text-green-600"
+          value={lecture.videoUrl || "غير موجود"}
+          color={lecture.videoUrl ? "text-green-600" : "text-red-500"}
         />
 
         <LectureStatusCard
           title="PDF"
-          value="غير موجود"
-          color="text-red-500"
+          value={lecture.pdfUrl || "غير موجود"}
+          color={lecture.pdfUrl ? "text-green-600" : "text-red-500"}
         />
 
         <LectureStatusCard
           title="الامتحان"
-          value="مضاف"
-          color="text-blue-600"
+          value={lecture.exams.length > 0 ? "مضاف" : "غير مضاف"}
+          color={lecture.exams.length > 0 ? "text-blue-600" : "text-red-500"}
         />
 
         <LectureStatusCard
           title="الحالة"
-          value="منشورة"
-          color="text-green-600"
+          value={lecture.isPublished ? "منشورة" : "مخفية"}
+          color={lecture.isPublished ? "text-green-600" : "text-red-500"}
         />
 
       </div>
@@ -71,6 +122,7 @@ export default function LectureDetailsPage() {
           icon={<FileQuestion size={34} />}
           title="إدارة الامتحان"
           description="إضافة أو تعديل الامتحان"
+          onClick={() => router.push(`/admin/exams/${lecture.id}`)}
         />
 
         <LectureActionCard
@@ -85,6 +137,18 @@ export default function LectureDetailsPage() {
           description="عدم ظهورها للطلاب"
         />
 
+      </div>
+
+      <div className="grid gap-6">
+        {lecture.exams.map((exam) => (
+          <ExamCard
+            key={exam.id}
+            id={exam.id}
+            title={exam.title}
+            questions={exam.questions.length}
+            duration={exam.duration}
+          />
+        ))}
       </div>
 
     </div>

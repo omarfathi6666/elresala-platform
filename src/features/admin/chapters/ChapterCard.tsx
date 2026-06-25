@@ -1,18 +1,33 @@
-import { FolderOpen } from "lucide-react";
+"use client";
+
+import { useRouter } from "next/navigation";
+import Link from "next/link";
+import { FolderOpen, Pencil, Trash2 } from "lucide-react";
 
 interface ChapterCardProps {
+  id: string;
   title: string;
   course: string;
   lectures: number;
+  onEdit?: () => void;
+  onDelete?: () => void;
 }
 
 export default function ChapterCard({
+  id,
   title,
   course,
   lectures,
+  onEdit,
+  onDelete,
 }: ChapterCardProps) {
+  const router = useRouter();
+
   return (
-    <div className="rounded-3xl bg-white p-6 shadow-sm transition hover:shadow-lg">
+    <div
+      className="block rounded-3xl bg-white p-6 shadow-sm transition hover:shadow-lg"
+      onClick={() => router.push(`/admin/chapters/${id}`)}
+    >
 
       <div className="flex items-center gap-4">
 
@@ -43,9 +58,35 @@ export default function ChapterCard({
           عدد المحاضرات
         </span>
 
-        <span className="font-bold text-blue-600">
-          {lectures}
-        </span>
+        <div className="flex items-center gap-3">
+          <span className="font-bold text-blue-600">
+            {lectures}
+          </span>
+
+          {onEdit && (
+            <button
+              className="rounded-xl border p-3"
+              onClick={(event) => {
+                event.stopPropagation();
+                onEdit();
+              }}
+            >
+              <Pencil size={18} />
+            </button>
+          )}
+
+          {onDelete && (
+            <button
+              className="rounded-xl border border-red-300 text-red-600 p-3"
+              onClick={(event) => {
+                event.stopPropagation();
+                onDelete();
+              }}
+            >
+              <Trash2 size={18} />
+            </button>
+          )}
+        </div>
 
       </div>
 

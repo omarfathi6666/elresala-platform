@@ -1,0 +1,51 @@
+
+> elresala-new@0.1.0 build
+> next build
+
+   ▲ Next.js 15.5.19
+   - Environments: .env
+
+   Creating an optimized production build ...
+ ✓ Compiled successfully in 79s
+   Linting and checking validity of types ...
+
+./src/features/home/components/testimonials/TestimonialCard.tsx
+31:9  Warning: `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`.  react/no-unescaped-entities
+31:19  Warning: `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`.  react/no-unescaped-entities
+
+./src/lib/db/prisma.ts
+4:3  Warning: Unused eslint-disable directive (no problems were reported from 'no-var').
+
+./src/repositories/admin/AdminRepository.ts
+23:1  Warning: Assign instance to a variable before exporting as module default  import/no-anonymous-default-export
+
+./src/repositories/code/code.repository.ts
+48:1  Warning: Assign instance to a variable before exporting as module default  import/no-anonymous-default-export
+
+./src/repositories/course/course.repository.ts
+45:1  Warning: Assign instance to a variable before exporting as module default  import/no-anonymous-default-export
+
+./src/repositories/student/student.repository.ts
+35:1  Warning: Assign instance to a variable before exporting as module default  import/no-anonymous-default-export
+
+info  - Need to disable some ESLint rules? Learn more here: https://nextjs.org/docs/app/api-reference/config/eslint#disabling-rules
+   Collecting page data ...
+   Generating static pages (0/34) ...
+Error occurred prerendering page "/admin/students". Read more: https://nextjs.org/docs/messages/prerender-error
+[Error: ENOENT: no such file or directory, open 'D:\elresala-new\.next\build-manifest.json'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'D:\\elresala-new\\.next\\build-manifest.json'
+}
+Export encountered an error on /admin/students/page: /admin/students, exiting the build.
+Error occurred prerendering page "/404". Read more: https://nextjs.org/docs/messages/prerender-error
+[Error: ENOENT: no such file or directory, open 'D:\elresala-new\.next\server\pages-manifest.json'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'D:\\elresala-new\\.next\\server\\pages-manifest.json'
+}
+Export encountered an error on /_error: /404, exiting the build.
+ ⨯ Next.js build worker exited with code: 1 and signal: null
+EXITCODE:0

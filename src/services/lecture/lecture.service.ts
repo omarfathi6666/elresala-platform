@@ -1,4 +1,4 @@
-import { prisma } from "@/lib/db/prisma";
+import { LectureRepository } from "@/repositories/lecture";
 
 export interface CreateLectureDto {
   title: string;
@@ -12,23 +12,25 @@ export interface CreateLectureDto {
 
 export class LectureService {
   static async getAll() {
-    return prisma.lecture.findMany({
-      include: {
-        chapter: {
-          include: {
-            course: true,
-          },
-        },
-      },
-      orderBy: {
-        order: "asc",
-      },
-    });
+    return LectureRepository.findAll();
   }
 
   static async create(data: CreateLectureDto) {
-    return prisma.lecture.create({
-      data,
-    });
+    return LectureRepository.create(data);
+  }
+
+  static async getById(id: string) {
+    return LectureRepository.findById(id);
+  }
+
+  static async update(
+    id: string,
+    data: CreateLectureDto
+  ) {
+    return LectureRepository.update(id, data);
+  }
+
+  static async delete(id: string) {
+    return LectureRepository.delete(id);
   }
 }

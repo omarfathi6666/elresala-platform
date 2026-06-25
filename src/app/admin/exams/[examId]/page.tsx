@@ -1,10 +1,20 @@
 import AdminLayout from "@/features/admin/layout";
 import ExamDetailsPage from "@/features/admin/exams/ExamDetailsPage";
 
-export default function Page() {
+interface PageProps {
+  params: Promise<{
+    examId: string;
+  }>;
+}
+
+export default async function Page({
+  params,
+}: PageProps) {
+  const { examId } = await params;
+
   return (
     <AdminLayout>
-      <ExamDetailsPage />
+      <ExamDetailsPage lectureId={examId} />
     </AdminLayout>
   );
 }

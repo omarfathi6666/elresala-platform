@@ -1,26 +1,36 @@
 import StatCard from "./StatCard";
 
-export default function StatsGrid() {
+interface StatsGridProps {
+  watchedLectures: number;
+  examsCount: number;
+  progress: number;
+}
+
+export default function StatsGrid({
+  watchedLectures,
+  examsCount,
+  progress,
+}: StatsGridProps) {
   return (
     <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-4">
       <StatCard
         title="الكورسات"
-        value="2"
+        value="0"
       />
 
       <StatCard
         title="المحاضرات"
-        value="34"
+        value={String(watchedLectures)}
       />
 
       <StatCard
         title="الامتحانات"
-        value="12"
+        value={String(examsCount)}
       />
 
       <StatCard
         title="نسبة الإنجاز"
-        value="68%"
+        value={`${progress}%`}
       />
     </div>
   );
