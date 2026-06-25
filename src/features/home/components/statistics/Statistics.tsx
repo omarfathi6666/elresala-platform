@@ -1,30 +1,32 @@
-import { Users, BookOpen, Trophy, FileCheck } from "lucide-react";
-
 import Container from "@/components/ui/Container";
 import StatisticCard from "./StatisticCard";
 
 const statistics = [
   {
-    icon: Users,
-    value: "+500",
-    label: "طالب على المنصة",
+    icon: "users",
+    target: 500,
+    prefix: "+",
+    label: "الطلاب",
   },
   {
-    icon: BookOpen,
-    value: "+150",
-    label: "محاضرة",
+    icon: "book",
+    target: 150,
+    prefix: "+",
+    label: "المحاضرات",
   },
   {
-    icon: FileCheck,
-    value: "+80",
-    label: "امتحان إلكتروني",
+    icon: "exam",
+    target: 80,
+    prefix: "+",
+    label: "الامتحانات",
   },
   {
-    icon: Trophy,
-    value: "98%",
+    icon: "trophy",
+    target: 98,
+    suffix: "%",
     label: "نسبة النجاح",
   },
-];
+] as const;
 
 export default function Statistics() {
   return (

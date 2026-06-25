@@ -1,3 +1,7 @@
+"use client";
+
+import { useRef } from "react";
+import { ArrowLeft, ArrowRight } from "lucide-react";
 import Container from "@/components/ui/Container";
 import TestimonialCard from "./TestimonialCard";
 
@@ -23,6 +27,23 @@ const testimonials = [
 ];
 
 export default function Testimonials() {
+  const sliderRef = useRef<HTMLDivElement | null>(null);
+
+  function slide(direction: "next" | "prev") {
+    const container = sliderRef.current;
+
+    if (!container) {
+      return;
+    }
+
+    const amount = Math.max(280, container.clientWidth * 0.85);
+
+    container.scrollBy({
+      left: direction === "next" ? amount : -amount,
+      behavior: "smooth",
+    });
+  }
+
   return (
     <section className="bg-white py-24">
       <Container>
@@ -38,11 +59,37 @@ export default function Testimonials() {
           <p className="mt-5 text-lg leading-8 text-slate-600">
             نفخر بثقة طلابنا ونسعى دائمًا لتقديم أفضل تجربة تعليمية.
           </p>
+
+          <div className="mt-8 flex items-center justify-center gap-3">
+            <button
+              type="button"
+              onClick={() => slide("prev")}
+              className="rounded-xl border border-slate-200 p-3 text-slate-600 transition hover:border-blue-500 hover:text-blue-700"
+            >
+              <ArrowRight size={18} />
+            </button>
+
+            <button
+              type="button"
+              onClick={() => slide("next")}
+              className="rounded-xl border border-slate-200 p-3 text-slate-600 transition hover:border-blue-500 hover:text-blue-700"
+            >
+              <ArrowLeft size={18} />
+            </button>
+          </div>
         </div>
 
-        <div className="mt-16 grid gap-8 lg:grid-cols-3">
+        <div
+          ref={sliderRef}
+          className="mt-16 flex snap-x snap-mandatory gap-6 overflow-x-auto pb-2"
+        >
           {testimonials.map((item) => (
-            <TestimonialCard key={item.name} {...item} />
+            <div
+              key={item.name}
+              className="min-w-[85%] snap-start sm:min-w-[55%] lg:min-w-[32%]"
+            >
+              <TestimonialCard {...item} />
+            </div>
           ))}
         </div>
       </Container>

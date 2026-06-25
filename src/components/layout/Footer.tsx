@@ -12,8 +12,8 @@ import Logo from "@/components/shared/Logo";
 
 export default function Footer() {
   return (
-    <footer className="bg-slate-950 text-white">
-      <Container className="py-16">
+    <footer id="contact" className="bg-slate-950 text-white">
+      <Container className="py-20">
         <div className="grid gap-12 lg:grid-cols-4">
           <div>
             <Logo />
@@ -36,7 +36,11 @@ export default function Footer() {
               </li>
 
               <li>
-                <Link href="#subjects">المواد</Link>
+                <Link href="#courses">المواد</Link>
+              </li>
+
+              <li>
+                <Link href="#features">المميزات</Link>
               </li>
 
               <li>
@@ -46,6 +50,10 @@ export default function Footer() {
               <li>
                 <Link href="/login">تسجيل الدخول</Link>
               </li>
+
+              <li>
+                <Link href="/register">إنشاء حساب جديد</Link>
+              </li>
             </ul>
           </div>
 
@@ -54,13 +62,13 @@ export default function Footer() {
               تواصل معنا
             </h3>
 
-            <div className="space-y-4 text-slate-400">
-              <div className="flex items-center gap-3">
+            <div className="space-y-5 text-slate-400">
+              <div className="flex items-center gap-3 rounded-xl bg-slate-900/60 p-3">
                 <Phone size={18} />
                 <span>01000000000</span>
               </div>
 
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-3 rounded-xl bg-slate-900/60 p-3">
                 <Mail size={18} />
                 <span>info@elresala.com</span>
               </div>
@@ -102,5 +110,5 @@ export default function Footer() {
         </div>
       </Container>
     </footer>
-      );
+  );
 }

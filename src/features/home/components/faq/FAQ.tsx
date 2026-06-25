@@ -26,7 +26,7 @@ const faqs = [
 
 export default function FAQ() {
   return (
-    <section className="bg-slate-50 py-24">
+    <section id="faq" className="bg-slate-50 py-24">
       <Container>
         <div className="mx-auto max-w-3xl text-center">
           <span className="rounded-full bg-blue-100 px-4 py-2 text-sm font-bold text-blue-700">

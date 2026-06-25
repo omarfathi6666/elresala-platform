@@ -2,6 +2,8 @@ import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 
 import Hero from "@/features/home/components/hero";
+import Features from "@/features/home/components/Features";
+import HowItWorks from "@/features/home/components/how-it-works";
 import Subjects from "@/features/home/components/subjects";
 import Statistics from "@/features/home/components/statistics";
 import WhyUs from "@/features/home/components/why-us";
@@ -16,6 +18,8 @@ export default function HomePage() {
 
       <main>
         <Hero />
+        <Features />
+        <HowItWorks />
         <Subjects />
         <Statistics />
         <WhyUs />

@@ -30,20 +30,20 @@ const subjects = [
 
 export default function Subjects() {
   return (
-    <section id="subjects" className="bg-slate-50 py-24">
+    <section id="courses" className="bg-slate-50 py-24">
       <Container>
         <div className="mx-auto max-w-3xl text-center">
           <span className="rounded-full bg-blue-100 px-4 py-2 text-sm font-bold text-blue-700">
-            المواد الدراسية
+            المواد المتاحة
           </span>
 
           <h2 className="mt-6 text-4xl font-extrabold text-slate-900">
-            اختر المادة التي تريد البدء بها
+            كورسات تعليمية منظمة باحتراف
           </h2>
 
           <p className="mt-5 text-lg leading-8 text-slate-600">
-            المنصة متخصصة في تدريس الأحياء للصف الثالث الثانوي والعلوم
-            المتكاملة للصف الأول الثانوي.
+            محتوى أكاديمي مصمم بعناية لطلاب الأحياء والعلوم المتكاملة مع متابعة
+            مستمرة وامتحانات دورية.
           </p>
         </div>
 

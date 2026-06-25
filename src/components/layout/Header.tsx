@@ -5,8 +5,8 @@ import Logo from "@/components/shared/Logo";
 
 const navLinks = [
   { title: "الرئيسية", href: "/" },
+  { title: "المواد", href: "#courses" },
   { title: "المميزات", href: "#features" },
-  { title: "الكورسات", href: "#courses" },
   { title: "الأسئلة الشائعة", href: "#faq" },
   { title: "تواصل معنا", href: "#contact" },
 ];
@@ -29,12 +29,21 @@ export default function Header() {
           ))}
         </nav>
 
-        <Link
-          href="/login"
-          className="rounded-xl bg-blue-600 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-blue-700"
-        >
-          تسجيل الدخول
-        </Link>
+        <div className="flex items-center gap-3">
+          <Link
+            href="/login"
+            className="rounded-xl border border-slate-300 px-4 py-2.5 text-sm font-semibold text-slate-700 transition hover:border-blue-600 hover:text-blue-700"
+          >
+            تسجيل الدخول
+          </Link>
+
+          <Link
+            href="/register"
+            className="rounded-xl bg-blue-600 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-blue-700"
+          >
+            إنشاء حساب جديد
+          </Link>
+        </div>
       </div>
     </header>
   );
