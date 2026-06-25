@@ -1,4 +1,3 @@
-import ExamForm from "./ExamForm";
 import ExamCard from "./ExamCard";
 
 const exams = [
@@ -17,8 +16,6 @@ export default function ExamsPage() {
       <h1 className="text-4xl font-black">
         الامتحانات
       </h1>
-
-      <ExamForm />
 
       <div className="grid gap-6">
 
