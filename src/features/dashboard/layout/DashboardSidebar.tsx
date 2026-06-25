@@ -18,27 +18,27 @@ const links = [
     icon: LayoutDashboard,
   },
   {
-    title: "الكورسات",
+    title: "موادي",
     href: "/dashboard/courses",
     icon: BookOpen,
   },
   {
-    title: "المحاضرات",
+    title: "محاضراتي",
     href: "/dashboard/lectures",
     icon: PlayCircle,
   },
   {
-    title: "الامتحانات",
+    title: "امتحاناتي",
     href: "/dashboard/exams",
     icon: FileText,
   },
   {
-    title: "النتائج",
-    href: "/dashboard/results",
+    title: "درجاتي",
+    href: "/dashboard/exams",
     icon: Trophy,
   },
   {
-    title: "الملف الشخصي",
+    title: "حسابي",
     href: "/dashboard/profile",
     icon: User,
   },

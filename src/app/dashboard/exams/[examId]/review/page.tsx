@@ -1,10 +1,61 @@
 import DashboardLayout from "@/features/dashboard/layout";
-import ReviewPage from "@/features/dashboard/exams/ReviewPage";
+import { notFound } from "next/navigation";
+import { getStudentSession } from "@/lib/auth/student-session";
+import { StudentAccessService } from "@/services/student-access";
 
-export default function Page() {
+interface PageProps {
+  params: Promise<{
+    examId: string;
+  }>;
+}
+
+export default async function Page({ params }: PageProps) {
+  const { examId } = await params;
+  const session = await getStudentSession();
+
+  if (!session) {
+    notFound();
+  }
+
+  const exam =
+    await StudentAccessService.getExamPageData(
+      session.studentId,
+      examId
+    );
+
+  if (!exam) {
+    notFound();
+  }
+
   return (
     <DashboardLayout>
-      <ReviewPage />
+      <div className="space-y-6">
+        <div className="rounded-3xl bg-white p-8 shadow-sm">
+          <h1 className="text-3xl font-black text-slate-900">
+            مراجعة: {exam.title}
+          </h1>
+          <p className="mt-2 text-slate-500">
+            جميع الأسئلة المتاحة في هذا الامتحان
+          </p>
+        </div>
+
+        <div className="space-y-4">
+          {exam.questions.map((question, index) => (
+            <div
+              key={question.id}
+              className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm"
+            >
+              <h2 className="font-black text-slate-900">
+                السؤال {index + 1}
+              </h2>
+
+              <p className="mt-3 text-slate-700">
+                {question.question}
+              </p>
+            </div>
+          ))}
+        </div>
+      </div>
     </DashboardLayout>
   );
 }

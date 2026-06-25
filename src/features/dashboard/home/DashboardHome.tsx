@@ -1,68 +1,81 @@
-import { verifyToken } from "@/lib/auth/jwt";
-import { getSession } from "@/lib/auth/session";
-import { CodeService } from "@/services/code";
-import { StudentService } from "@/services/student/student.service";
+import Link from "next/link";
+import { getStudentSession } from "@/lib/auth/student-session";
+import { StudentAccessService } from "@/services/student-access";
 import ActivationWelcome from "./ActivationWelcome";
-import WelcomeCard from "./WelcomeCard";
-import StatsGrid from "./StatsGrid";
-import ContinueCard from "./ContinueCard";
-import ProgressCard from "./ProgressCard";
 
 export default async function DashboardHome() {
-  const token = await getSession();
+  const session = await getStudentSession();
 
-  let studentName = "الطالب";
-  let watchedLectures = 0;
-  let examsCount = 0;
-  let progress = 0;
-  let hasActiveSubscription = false;
-
-  if (token) {
-    try {
-      const payload = await verifyToken(token);
-
-      if (payload.role === "STUDENT") {
-        hasActiveSubscription =
-          await CodeService.hasActiveSubscription(
-            payload.id
-          );
-
-        const summary =
-          await StudentService.getDashboardSummary(
-            payload.id
-          );
-
-        studentName = summary.studentName;
-        watchedLectures = summary.watchedLectures;
-        examsCount = summary.examsCount;
-        progress = summary.progress;
-      }
-    } catch {
-      // Keep safe zero/default values if token is invalid.
-    }
+  if (!session) {
+    return null;
   }
 
-  if (!hasActiveSubscription) {
+  const homeData = await StudentAccessService.getHomeData(
+    session.studentId
+  );
+
+  if (!homeData.hasAccess) {
     return (
       <div className="flex min-h-[calc(100vh-12rem)] items-center justify-center">
-        <ActivationWelcome studentName={studentName} />
+        <ActivationWelcome
+          studentName={homeData.studentName}
+        />
       </div>
     );
   }
 
   return (
     <div className="space-y-8">
-      <WelcomeCard studentName={studentName} />
+      <div className="rounded-3xl bg-white p-8 shadow-sm">
+        <h1 className="text-3xl font-black text-slate-900">
+          أهلاً {homeData.studentName}
+        </h1>
 
-      <StatsGrid
-        watchedLectures={watchedLectures}
-        examsCount={examsCount}
-        progress={progress}
-      />
+        <p className="mt-3 text-slate-600">
+          اختر من الاختصارات السريعة للوصول إلى محتواك الدراسي.
+        </p>
+      </div>
 
-      <div className="grid gap-8 lg:grid-cols-2">
-        <ContinueCard />
-        <ProgressCard progress={progress} />
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
+        {homeData.quickCards.map((card) => (
+          <Link
+            key={card.title}
+            href={card.href}
+            className="rounded-2xl border border-slate-200 bg-white p-5 text-center font-bold text-slate-800 shadow-sm transition hover:border-blue-500 hover:text-blue-700"
+          >
+            {card.title}
+          </Link>
+        ))}
+      </div>
+
+      <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-4">
+        <div className="rounded-2xl bg-white p-6 shadow-sm">
+          <p className="text-slate-500">عدد المواد</p>
+          <h2 className="mt-2 text-3xl font-black">
+            {homeData.stats.courses}
+          </h2>
+        </div>
+
+        <div className="rounded-2xl bg-white p-6 shadow-sm">
+          <p className="text-slate-500">المحاضرات المتاحة</p>
+          <h2 className="mt-2 text-3xl font-black">
+            {homeData.stats.lectures}
+          </h2>
+        </div>
+
+        <div className="rounded-2xl bg-white p-6 shadow-sm">
+          <p className="text-slate-500">امتحاناتي</p>
+          <h2 className="mt-2 text-3xl font-black">
+            {homeData.stats.exams}
+          </h2>
+        </div>
+
+        <div className="rounded-2xl bg-white p-6 shadow-sm">
+          <p className="text-slate-500">تقدمي</p>
+          <h2 className="mt-2 text-3xl font-black">
+            {homeData.stats.progress}%
+          </h2>
+        </div>
       </div>
     </div>
   );
