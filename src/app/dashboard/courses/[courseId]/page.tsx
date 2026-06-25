@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getStudentSession } from "@/lib/auth/student-session";
 import { StudentAccessService } from "@/services/student-access";
+import Breadcrumbs from "@/features/dashboard/shared/Breadcrumbs";
 
 interface PageProps {
   params: Promise<{
@@ -31,6 +32,13 @@ export default async function Page({ params }: PageProps) {
   return (
     <DashboardLayout>
       <div className="space-y-8">
+        <Breadcrumbs
+          items={[
+            { label: "الرئيسية", href: "/dashboard" },
+            { label: data.course.title },
+          ]}
+        />
+
         <div className="rounded-3xl bg-white p-8 shadow-sm">
           <h1 className="text-3xl font-black text-slate-900">
             {data.course.title}

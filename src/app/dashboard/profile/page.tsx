@@ -3,6 +3,7 @@ import ProfilePage from "@/features/dashboard/profile";
 import { notFound } from "next/navigation";
 import { getStudentSession } from "@/lib/auth/student-session";
 import { StudentAccessService } from "@/services/student-access";
+import Breadcrumbs from "@/features/dashboard/shared/Breadcrumbs";
 
 export default async function Page() {
   const session = await getStudentSession();
@@ -22,6 +23,13 @@ export default async function Page() {
 
   return (
     <DashboardLayout>
+      <Breadcrumbs
+        items={[
+          { label: "الرئيسية", href: "/dashboard" },
+          { label: "حسابي" },
+        ]}
+      />
+
       <ProfilePage />
     </DashboardLayout>
   );

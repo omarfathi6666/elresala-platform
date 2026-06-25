@@ -2,6 +2,7 @@ import Link from "next/link";
 import { getStudentSession } from "@/lib/auth/student-session";
 import { StudentAccessService } from "@/services/student-access";
 import ActivationWelcome from "./ActivationWelcome";
+import Breadcrumbs from "../shared/Breadcrumbs";
 
 export default async function DashboardHome() {
   const session = await getStudentSession();
@@ -26,6 +27,10 @@ export default async function DashboardHome() {
 
   return (
     <div className="space-y-8">
+      <Breadcrumbs
+        items={[{ label: "الرئيسية" }]}
+      />
+
       <div className="rounded-3xl bg-white p-8 shadow-sm">
         <h1 className="text-3xl font-black text-slate-900">
           أهلاً {homeData.studentName}
@@ -50,23 +55,23 @@ export default async function DashboardHome() {
 
       <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-4">
         <div className="rounded-2xl bg-white p-6 shadow-sm">
-          <p className="text-slate-500">عدد المواد</p>
+          <p className="text-slate-500">المحاضرات المكتملة</p>
           <h2 className="mt-2 text-3xl font-black">
-            {homeData.stats.courses}
+            {homeData.stats.completedLectures}
           </h2>
         </div>
 
         <div className="rounded-2xl bg-white p-6 shadow-sm">
-          <p className="text-slate-500">المحاضرات المتاحة</p>
+          <p className="text-slate-500">الاختبارات المكتملة</p>
           <h2 className="mt-2 text-3xl font-black">
-            {homeData.stats.lectures}
+            {homeData.stats.completedExams}
           </h2>
         </div>
 
         <div className="rounded-2xl bg-white p-6 shadow-sm">
-          <p className="text-slate-500">امتحاناتي</p>
+          <p className="text-slate-500">متوسط الدرجات</p>
           <h2 className="mt-2 text-3xl font-black">
-            {homeData.stats.exams}
+            {homeData.stats.averageScore}%
           </h2>
         </div>
 
@@ -76,6 +81,22 @@ export default async function DashboardHome() {
             {homeData.stats.progress}%
           </h2>
         </div>
+      </div>
+
+      <div className="rounded-2xl bg-white p-6 shadow-sm">
+        <p className="text-slate-500">آخر محاضرة</p>
+        <h2 className="mt-2 text-2xl font-black text-slate-900">
+          {homeData.stats.latestLecture ? (
+            <Link
+              href={`/dashboard/player/${homeData.stats.latestLecture.id}`}
+              className="text-blue-700 hover:underline"
+            >
+              {homeData.stats.latestLecture.title}
+            </Link>
+          ) : (
+            "لا توجد محاضرة مكتملة بعد"
+          )}
+        </h2>
       </div>
     </div>
   );

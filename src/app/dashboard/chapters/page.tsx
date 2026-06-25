@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getStudentSession } from "@/lib/auth/student-session";
 import { StudentAccessService } from "@/services/student-access";
+import Breadcrumbs from "@/features/dashboard/shared/Breadcrumbs";
 
 export default async function Page() {
   const session = await getStudentSession();
@@ -28,6 +29,13 @@ export default async function Page() {
   return (
     <DashboardLayout>
       <div className="space-y-6">
+        <Breadcrumbs
+          items={[
+            { label: "الرئيسية", href: "/dashboard" },
+            { label: "الفصول" },
+          ]}
+        />
+
         <h1 className="text-3xl font-black text-slate-900">
           فصولي
         </h1>

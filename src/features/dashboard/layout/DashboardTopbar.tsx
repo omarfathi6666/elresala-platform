@@ -1,9 +1,26 @@
-import { Bell, Search } from "lucide-react";
+"use client";
 
-export default function DashboardTopbar() {
+import { Bell, Menu, Search } from "lucide-react";
+
+interface DashboardTopbarProps {
+  onOpenMobileMenu?: () => void;
+}
+
+export default function DashboardTopbar({
+  onOpenMobileMenu,
+}: DashboardTopbarProps) {
   return (
     <header className="sticky top-0 z-30 flex h-20 items-center justify-between border-b border-slate-200 bg-white px-8">
-      <div>
+      <div className="flex items-center gap-3">
+        <button
+          type="button"
+          onClick={onOpenMobileMenu}
+          className="rounded-2xl border border-slate-200 p-3 lg:hidden"
+        >
+          <Menu size={20} />
+        </button>
+
+        <div>
         <h1 className="text-2xl font-bold text-slate-900">
           لوحة التحكم
         </h1>
@@ -11,6 +28,7 @@ export default function DashboardTopbar() {
         <p className="text-sm text-slate-500">
           أهلاً بك من جديد 👋
         </p>
+        </div>
       </div>
 
       <div className="flex items-center gap-4">

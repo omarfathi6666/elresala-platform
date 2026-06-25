@@ -120,15 +120,46 @@ export class StudentAccessService {
             }, 0) / results.length
           );
 
+    const completedExamIds = this.unique(
+      results.map((result) => result.examId)
+    );
+
+    const completedLectureIds = this.unique(
+      results.map((result) => result.exam.lectureId)
+    );
+
+    const allowedExams =
+      await StudentAccessRepository.findExamsByLectureIds(
+        map.lectureIds
+      );
+
+    const progress =
+      allowedExams.length === 0
+        ? 0
+        : Math.round(
+            (completedExamIds.length /
+              allowedExams.length) *
+              100
+          );
+
+    const latestResult = results[0];
+
+    const latestLecture = latestResult
+      ? {
+          id: latestResult.exam.lecture.id,
+          title: latestResult.exam.lecture.title,
+        }
+      : null;
+
     return {
       studentName: student.name,
       hasAccess: map.courseIds.length > 0,
       stats: {
-        courses: map.courseIds.length,
-        lectures: map.lectureIds.length,
-        exams: (await StudentAccessRepository.findExamsByLectureIds(map.lectureIds)).length,
-        results: results.length,
-        progress: averageScore,
+        completedLectures: completedLectureIds.length,
+        completedExams: completedExamIds.length,
+        averageScore,
+        progress,
+        latestLecture,
       },
       quickCards: [
         {
@@ -141,7 +172,7 @@ export class StudentAccessService {
         },
         {
           title: "📈 تقدمي",
-          href: "/dashboard/courses",
+          href: "/dashboard",
         },
         {
           title: "🏆 درجاتي",
