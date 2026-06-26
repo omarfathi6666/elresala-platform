@@ -124,6 +124,11 @@ export class StudentService {
       throw new Error("Invalid phone or password.");
     }
 
+    await StudentRepository.updateLastLogin(
+      student.id,
+      new Date()
+    );
+
     return student;
   }
 

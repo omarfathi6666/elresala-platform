@@ -33,6 +33,7 @@ model Student {
   governorate String
   grade       String
   isActive    Boolean      @default(true)
+  lastLoginAt DateTime?
   createdAt   DateTime     @default(now())
   updatedAt   DateTime     @updatedAt
   codes       Code[]

@@ -79,6 +79,17 @@ class StudentRepository {
       data,
     });
   }
+
+  async updateLastLogin(id: string, date: Date) {
+    return prisma.student.update({
+      where: {
+        id,
+      },
+      data: {
+        lastLoginAt: date,
+      },
+    });
+  }
 }
 
 export default new StudentRepository();
