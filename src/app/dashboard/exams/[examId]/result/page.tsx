@@ -1,5 +1,5 @@
 import DashboardLayout from "@/features/dashboard/layout";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { getStudentSession } from "@/lib/auth/student-session";
 import { StudentAccessService } from "@/services/student-access";
 import Breadcrumbs from "@/features/dashboard/shared/Breadcrumbs";
@@ -48,8 +48,12 @@ export default async function Page({ params }: PageProps) {
     notFound();
   }
 
-  const score = data.latestResult?.score ?? 0;
-  const total = data.latestResult?.total ?? data.exam.totalMarks;
+  if (!data.latestResult) {
+    redirect(`/dashboard/exams/${data.exam.id}`);
+  }
+
+  const score = data.latestResult.score;
+  const total = data.latestResult.total;
   const percentage =
     total > 0 ? Math.round((score / total) * 100) : 0;
 
@@ -110,7 +114,7 @@ export default async function Page({ params }: PageProps) {
                 ? new Date(
                     data.latestResult.submittedAt
                   ).toLocaleDateString("ar-EG")
-                : "لا توجد محاولة بعد"}
+                : "-"}
             </h2>
           </div>
         </div>

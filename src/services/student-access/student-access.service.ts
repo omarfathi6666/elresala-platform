@@ -26,6 +26,11 @@ interface LectureExamEntry {
   hasSubmitted: boolean;
 }
 
+interface SubmitExamDto {
+  examId: string;
+  answers: Record<string, string>;
+}
+
 export class StudentAccessService {
   private static unique(values: string[]) {
     return Array.from(new Set(values));
@@ -567,5 +572,58 @@ export class StudentAccessService {
       exam,
       latestResult,
     };
+  }
+
+  static async submitExam(
+    studentId: string,
+    data: SubmitExamDto
+  ) {
+    const exam = await this.getExamPageData(
+      studentId,
+      data.examId
+    );
+
+    if (!exam) {
+      throw new Error("Exam not available.");
+    }
+
+    const latestResult =
+      await StudentAccessRepository.findLatestExamResult(
+        studentId,
+        data.examId
+      );
+
+    if (latestResult) {
+      return latestResult;
+    }
+
+    const correctAnswers = new Map(
+      exam.questions.map((question) => [
+        question.id,
+        question.correctAnswer,
+      ])
+    );
+
+    const score = Object.entries(data.answers).reduce(
+      (sum, [questionId, answer]) => {
+        const expected = correctAnswers.get(questionId);
+
+        return expected && expected === answer
+          ? sum + 1
+          : sum;
+      },
+      0
+    );
+
+    const now = new Date();
+
+    return StudentAccessRepository.createExamResult({
+      studentId,
+      examId: data.examId,
+      score,
+      total: exam.questions.length,
+      startedAt: now,
+      submittedAt: now,
+    });
   }
 }

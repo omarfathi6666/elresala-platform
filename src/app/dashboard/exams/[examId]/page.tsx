@@ -1,9 +1,10 @@
 import DashboardLayout from "@/features/dashboard/layout";
 import Link from "next/link";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { getStudentSession } from "@/lib/auth/student-session";
 import { StudentAccessService } from "@/services/student-access";
 import Breadcrumbs from "@/features/dashboard/shared/Breadcrumbs";
+import ExamTakingClient from "@/features/dashboard/exams/ExamTakingClient";
 
 interface PageProps {
   params: Promise<{
@@ -21,12 +22,21 @@ export default async function Page({ params }: PageProps) {
 
   let exam = null;
   let accessError = "";
+  let latestResult = null;
 
   try {
     exam = await StudentAccessService.getExamPageData(
       session.studentId,
       examId
     );
+
+    const resultData =
+      await StudentAccessService.getExamResultPageData(
+        session.studentId,
+        examId
+      );
+
+    latestResult = resultData?.latestResult ?? null;
   } catch (error) {
     accessError =
       error instanceof Error
@@ -46,6 +56,10 @@ export default async function Page({ params }: PageProps) {
 
   if (!exam) {
     notFound();
+  }
+
+  if (latestResult) {
+    redirect(`/dashboard/exams/${exam.id}/result`);
   }
 
   return (
@@ -104,27 +118,21 @@ export default async function Page({ params }: PageProps) {
 
         <div className="rounded-3xl bg-white p-8 shadow-sm">
           <h2 className="text-2xl font-black">الأسئلة</h2>
-          <div className="mt-5 space-y-3">
-            {exam.questions.map((question) => (
-              <div
-                key={question.id}
-                className="rounded-2xl border border-slate-200 p-4"
-              >
-                <p className="font-bold text-slate-900">
-                  {question.question}
-                </p>
-              </div>
-            ))}
+          <div className="mt-5">
+            <ExamTakingClient
+              examId={exam.id}
+              questions={exam.questions.map((question) => ({
+                id: question.id,
+                question: question.question,
+                choiceA: question.choiceA,
+                choiceB: question.choiceB,
+                choiceC: question.choiceC,
+                choiceD: question.choiceD,
+              }))}
+            />
           </div>
 
           <div className="mt-6 flex gap-3">
-            <Link
-              href={`/dashboard/exams/${exam.id}/result`}
-              className="rounded-2xl bg-blue-600 px-5 py-3 font-bold text-white"
-            >
-              صفحة النتيجة
-            </Link>
-
             <Link
               href={`/dashboard/exams/${exam.id}/review`}
               className="rounded-2xl border border-slate-300 px-5 py-3 font-bold text-slate-700"

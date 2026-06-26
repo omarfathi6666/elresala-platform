@@ -297,6 +297,19 @@ class StudentAccessRepository {
       },
     });
   }
+
+  async createExamResult(data: {
+    studentId: string;
+    examId: string;
+    score: number;
+    total: number;
+    startedAt: Date;
+    submittedAt: Date;
+  }) {
+    return prisma.examResult.create({
+      data,
+    });
+  }
 }
 
 export default new StudentAccessRepository();
