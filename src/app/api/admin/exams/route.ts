@@ -40,12 +40,13 @@ export async function POST(request: Request) {
       availabilityMode === "SPECIFIC_DATE"
         ? new Date(availableFromRaw)
         : null;
-
-    if (
+    const isInvalidSpecificDate =
       availabilityMode === "SPECIFIC_DATE" &&
       (!availableFromRaw ||
-        Number.isNaN(availableFrom.getTime()))
-    ) {
+        !availableFrom ||
+        Number.isNaN(availableFrom.getTime()));
+
+    if (isInvalidSpecificDate) {
       return fail(
         "A valid availability date and time is required.",
         400
