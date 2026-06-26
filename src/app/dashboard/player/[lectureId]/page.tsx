@@ -91,15 +91,38 @@ export default async function Page({ params }: PageProps) {
 
           <div className="mt-4 space-y-3">
             {lecture.exams.map((exam) => (
-              <Link
+              <div
                 key={exam.id}
-                href={`/dashboard/exams/${exam.id}`}
-                className="block rounded-2xl border border-slate-200 p-4 transition hover:border-blue-500"
+                className="rounded-2xl border border-slate-200 p-4"
               >
                 <h3 className="font-bold text-slate-900">
                   {exam.title}
                 </h3>
-              </Link>
+
+                <div className="mt-3">
+                  {exam.isAvailable ? (
+                    exam.hasSubmitted ? (
+                      <Link
+                        href={`/dashboard/exams/${exam.id}/result`}
+                        className="inline-block rounded-2xl border border-slate-300 px-5 py-2 font-bold text-slate-700"
+                      >
+                        View Result
+                      </Link>
+                    ) : (
+                      <Link
+                        href={`/dashboard/exams/${exam.id}`}
+                        className="inline-block rounded-2xl bg-blue-600 px-5 py-2 font-bold text-white"
+                      >
+                        Start Exam
+                      </Link>
+                    )
+                  ) : (
+                    <p className="font-medium text-slate-500">
+                      Exam not available yet.
+                    </p>
+                  )}
+                </div>
+              </div>
             ))}
 
             {lecture.exams.length === 0 ? (

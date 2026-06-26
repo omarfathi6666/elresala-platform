@@ -1,8 +1,8 @@
 import Link from "next/link";
 import { getStudentSession } from "@/lib/auth/student-session";
 import { StudentAccessService } from "@/services/student-access";
-import ActivationWelcome from "./ActivationWelcome";
 import Breadcrumbs from "../shared/Breadcrumbs";
+import ActivateCodeButton from "./ActivateCodeButton";
 
 export default async function DashboardHome() {
   const session = await getStudentSession();
@@ -17,10 +17,31 @@ export default async function DashboardHome() {
 
   if (!homeData.hasAccess) {
     return (
-      <div className="flex min-h-[calc(100vh-12rem)] items-center justify-center">
-        <ActivationWelcome
-          studentName={homeData.studentName}
+      <div className="space-y-8">
+        <Breadcrumbs
+          items={[{ label: "الرئيسية" }]}
         />
+
+        <div className="rounded-3xl bg-white p-10 shadow-sm">
+          <h1 className="text-3xl font-black text-slate-900">
+            أهلاً {homeData.studentName}
+          </h1>
+
+          <p className="mt-4 text-lg text-slate-600">
+            لا يوجد محتوى متاح في حسابك حالياً.
+          </p>
+
+          <p className="mt-2 text-slate-500">
+            فعّل كود الاشتراك لفتح الكورسات، الفصول، والمحاضرات.
+          </p>
+
+          <div className="mt-8">
+            <ActivateCodeButton
+              label="Activate Code"
+              className="rounded-2xl bg-blue-600 px-10 py-5 text-lg font-bold text-white"
+            />
+          </div>
+        </div>
       </div>
     );
   }

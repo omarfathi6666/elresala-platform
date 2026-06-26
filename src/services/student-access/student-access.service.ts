@@ -19,6 +19,13 @@ interface AccessMap {
   lectureIds: string[];
 }
 
+interface LectureExamEntry {
+  id: string;
+  title: string;
+  isAvailable: boolean;
+  hasSubmitted: boolean;
+}
+
 export class StudentAccessService {
   private static unique(values: string[]) {
     return Array.from(new Set(values));
@@ -242,6 +249,16 @@ export class StudentAccessService {
     return StudentAccessRepository.findCoursesByIds(map.courseIds);
   }
 
+  static async getCoursesWithAccess(studentId: string) {
+    const map = await this.getAccessMap(studentId);
+    const courses = await StudentAccessRepository.findAllCourses();
+
+    return courses.map((course) => ({
+      ...course,
+      isLocked: !map.courseIds.includes(course.id),
+    }));
+  }
+
   static async getAllowedChapters(studentId: string) {
     const map = await this.getAccessMap(studentId);
 
@@ -253,6 +270,16 @@ export class StudentAccessService {
     return chapters.filter((chapter) =>
       map.chapterIds.includes(chapter.id)
     );
+  }
+
+  static async getChaptersWithAccess(studentId: string) {
+    const map = await this.getAccessMap(studentId);
+    const chapters = await StudentAccessRepository.findAllChapters();
+
+    return chapters.map((chapter) => ({
+      ...chapter,
+      isLocked: !map.chapterIds.includes(chapter.id),
+    }));
   }
 
   static async getCoursePageData(
@@ -410,17 +437,35 @@ export class StudentAccessService {
 
     const completedLectureIds =
       await this.getCompletedLectureIds(studentId);
+    const results =
+      await StudentAccessRepository.findExamResultsByStudentId(
+        studentId
+      );
+    const submittedExamIds = new Set(
+      results.map((result) => result.examId)
+    );
     const now = new Date();
 
-    return {
-      ...lecture,
-      exams: lecture.exams.filter((exam) =>
-        this.isExamVisible(
+    const exams: LectureExamEntry[] = lecture.exams
+      .filter((exam) => exam.availabilityMode !== "HIDDEN")
+      .map((exam) => {
+        const isAvailable = this.isExamVisible(
           exam,
           now,
           completedLectureIds
-        )
-      ),
+        );
+
+        return {
+          id: exam.id,
+          title: exam.title,
+          isAvailable,
+          hasSubmitted: submittedExamIds.has(exam.id),
+        };
+      });
+
+    return {
+      ...lecture,
+      exams,
     };
   }
 
@@ -441,6 +486,16 @@ export class StudentAccessService {
     return lectures.filter((lecture) =>
       lectureIds.includes(lecture.id)
     );
+  }
+
+  static async getLecturesWithAccess(studentId: string) {
+    const map = await this.getAccessMap(studentId);
+    const lectures = await StudentAccessRepository.findAllLectures();
+
+    return lectures.map((lecture) => ({
+      ...lecture,
+      isLocked: !map.lectureIds.includes(lecture.id),
+    }));
   }
 
   static async getAllowedExams(studentId: string) {

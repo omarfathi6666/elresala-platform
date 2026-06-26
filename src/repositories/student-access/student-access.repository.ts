@@ -44,6 +44,14 @@ class StudentAccessRepository {
     });
   }
 
+  async findAllCourses() {
+    return prisma.course.findMany({
+      orderBy: {
+        order: "asc",
+      },
+    });
+  }
+
   async findChaptersByCourseIds(courseIds: string[]) {
     if (courseIds.length === 0) {
       return [];
@@ -58,6 +66,24 @@ class StudentAccessRepository {
       orderBy: {
         order: "asc",
       },
+    });
+  }
+
+  async findAllChapters() {
+    return prisma.chapter.findMany({
+      include: {
+        course: true,
+      },
+      orderBy: [
+        {
+          course: {
+            order: "asc",
+          },
+        },
+        {
+          order: "asc",
+        },
+      ],
     });
   }
 
@@ -82,6 +108,28 @@ class StudentAccessRepository {
       orderBy: {
         order: "asc",
       },
+    });
+  }
+
+  async findAllLectures() {
+    return prisma.lecture.findMany({
+      include: {
+        chapter: {
+          include: {
+            course: true,
+          },
+        },
+      },
+      orderBy: [
+        {
+          chapter: {
+            order: "asc",
+          },
+        },
+        {
+          order: "asc",
+        },
+      ],
     });
   }
 
