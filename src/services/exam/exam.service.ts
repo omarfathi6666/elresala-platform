@@ -5,6 +5,12 @@ export interface CreateExamDto {
   duration: number;
   totalMarks: number;
   lectureId: string;
+  availabilityMode:
+    | "IMMEDIATELY"
+    | "AFTER_LECTURE_COMPLETION"
+    | "SPECIFIC_DATE"
+    | "HIDDEN";
+  availableFrom?: Date | null;
 }
 
 export class ExamService {

@@ -18,7 +18,7 @@ export async function POST(request: Request) {
     const password = body.password?.trim();
 
     if (!phone || !password) {
-      return fail("جميع الحقول مطلوبة", 400);
+      return fail("Invalid phone or password.", 400);
     }
 
     const student = await StudentService.login({
@@ -38,7 +38,7 @@ export async function POST(request: Request) {
       {
         student,
       },
-      "تم تسجيل الدخول بنجاح"
+      "Login successful."
     );
   });
 }

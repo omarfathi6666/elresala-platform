@@ -22,14 +22,24 @@ export default function RegisterForm() {
   const {
     register,
     handleSubmit,
+    setError: setFormError,
     formState: { errors },
   } = useForm<RegisterFormData>();
   const [message, setMessage] = useState("");
-  const [error, setError] = useState("");
+  const [submitError, setSubmitError] = useState("");
 
   const onSubmit = async (data: RegisterFormData) => {
     setMessage("");
-    setError("");
+    setSubmitError("");
+
+    if (data.password !== data.confirmPassword) {
+      setFormError("confirmPassword", {
+        type: "manual",
+        message: "Passwords do not match.",
+      });
+
+      return;
+    }
 
     const response = await fetch("/api/student/register", {
       method: "POST",
@@ -40,6 +50,7 @@ export default function RegisterForm() {
         name: data.fullName,
         email: data.email,
         password: data.password,
+        confirmPassword: data.confirmPassword,
         phone: data.phone,
         parentPhone: data.parentPhone,
         governorate: data.governorate,
@@ -50,11 +61,11 @@ export default function RegisterForm() {
     const result = await response.json();
 
     if (!response.ok) {
-      setError(result.message || "حدث خطأ أثناء التسجيل");
+      setSubmitError(result.message || "Registration failed.");
       return;
     }
 
-    setMessage("تم إنشاء الحساب بنجاح");
+    setMessage("Registration successful.");
   };
 
   return (
@@ -77,7 +88,7 @@ export default function RegisterForm() {
           placeholder="الاسم بالكامل"
           error={errors.fullName?.message}
           {...register("fullName", {
-            required: "الاسم مطلوب",
+            required: "Full name is required.",
           })}
         />
 
@@ -86,7 +97,11 @@ export default function RegisterForm() {
           placeholder="01xxxxxxxxx"
           error={errors.phone?.message}
           {...register("phone", {
-            required: "رقم الهاتف مطلوب",
+            required: "Phone number is required.",
+            pattern: {
+              value: /^01\d{9}$/,
+              message: "Invalid phone number.",
+            },
           })}
         />
 
@@ -104,7 +119,7 @@ export default function RegisterForm() {
 
           <select
             {...register("governorate", {
-              required: "المحافظة مطلوبة",
+              required: "Governorate is required.",
             })}
             className="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 outline-none transition focus:border-blue-600 focus:ring-4 focus:ring-blue-100"
           >
@@ -153,7 +168,7 @@ export default function RegisterForm() {
 
           <select
             {...register("grade", {
-              required: "اختر المرحلة الدراسية",
+              required: "Grade is required.",
             })}
             className="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 outline-none transition focus:border-blue-600 focus:ring-4 focus:ring-blue-100"
           >
@@ -180,7 +195,11 @@ export default function RegisterForm() {
           placeholder="01xxxxxxxxx"
           error={errors.parentPhone?.message}
           {...register("parentPhone", {
-            required: "رقم ولي الأمر مطلوب",
+            required: "Parent phone number is required.",
+            pattern: {
+              value: /^01\d{9}$/,
+              message: "Invalid phone number.",
+            },
           })}
         />
 
@@ -189,7 +208,7 @@ export default function RegisterForm() {
           type="password"
           error={errors.password?.message}
           {...register("password", {
-            required: "كلمة المرور مطلوبة",
+            required: "Password is required.",
           })}
         />
 
@@ -198,13 +217,13 @@ export default function RegisterForm() {
           type="password"
           error={errors.confirmPassword?.message}
           {...register("confirmPassword", {
-            required: "تأكيد كلمة المرور مطلوب",
+            required: "Please confirm your password.",
           })}
         />
 
-      {error && (
+      {submitError && (
         <div className="rounded bg-red-100 p-3 text-red-600">
-          {error}
+          {submitError}
         </div>
       )}
 

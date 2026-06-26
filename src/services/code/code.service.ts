@@ -85,7 +85,7 @@ export class CodeService {
       );
 
     if (!subscriptionCode) {
-      throw new Error("كود الاشتراك غير موجود");
+      throw new Error("Invalid activation code.");
     }
 
     const now = new Date();
@@ -94,25 +94,21 @@ export class CodeService {
       subscriptionCode.expiresAt &&
       subscriptionCode.expiresAt < now
     ) {
-      throw new Error("كود الاشتراك منتهي الصلاحية");
+      throw new Error("Code has expired.");
     }
 
     if (
       subscriptionCode.studentId &&
       subscriptionCode.studentId !== studentId
     ) {
-      throw new Error(
-        "هذا الكود مرتبط بحساب طالب آخر"
-      );
+      throw new Error("Code has already been used.");
     }
 
     if (
       subscriptionCode.usedCount >=
       subscriptionCode.maxDevices
     ) {
-      throw new Error(
-        "تم الوصول للحد الأقصى للأجهزة لهذا الكود"
-      );
+      throw new Error("Code has already been used.");
     }
 
     const activated = await CodeRepository.activateCodeById(

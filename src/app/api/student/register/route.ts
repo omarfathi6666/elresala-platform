@@ -15,31 +15,37 @@ export async function POST(request: Request) {
     const name = body.name?.trim();
     let email = body.email?.trim();
     const password = body.password?.trim();
+    const confirmPassword = body.confirmPassword?.trim();
+    const phone = body.phone?.trim();
+    const governorate = body.governorate?.trim();
+    const grade = body.grade?.trim();
+    const parentPhone = body.parentPhone?.trim();
 
     // Treat empty email string as undefined (email is optional)
     if (email === "") {
       email = undefined;
     }
 
-    if (!name || !password) {
-      return fail("جميع الحقول مطلوبة", 400);
+    if (!name || !password || !phone || !governorate || !grade) {
+      return fail("Registration failed.", 400);
     }
 
     const student = await StudentService.register({
       name,
       email,
       password,
-      phone: body.phone,
-      governorate: body.governorate,
-      grade: body.grade,
-      parentPhone: body.parentPhone,
+      confirmPassword,
+      phone,
+      governorate,
+      grade,
+      parentPhone,
     });
 
     return success(
       {
         student,
       },
-      "تم إنشاء الحساب بنجاح"
+      "Registration successful."
     );
   });
 }

@@ -7,5 +7,5 @@ export function handleApiError(error: unknown) {
     return fail(error.message, 500);
   }
 
-  return fail("Internal Server Error", 500);
+  return fail("Something went wrong.", 500);
 }

@@ -18,7 +18,7 @@ export default function ActivationWelcome({
 
   async function activate() {
     if (!code.trim()) {
-      alert("يرجى إدخال كود الاشتراك");
+      alert("Invalid activation code.");
       return;
     }
 
@@ -45,7 +45,7 @@ export default function ActivationWelcome({
       return;
     }
 
-    toast.success("تم تفعيل الكود بنجاح");
+    toast.success("Activation successful.");
 
     setIsOpen(false);
     setCode("");

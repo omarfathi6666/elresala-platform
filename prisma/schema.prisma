@@ -7,6 +7,13 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum ExamAvailabilityMode {
+  IMMEDIATELY
+  AFTER_LECTURE_COMPLETION
+  SPECIFIC_DATE
+  HIDDEN
+}
+
 model Admin {
   id        String   @id @default(cuid())
   name      String
@@ -70,16 +77,18 @@ model Lecture {
 }
 
 model Exam {
-  id          String       @id @default(cuid())
-  title       String
-  duration    Int
-  totalMarks  Int
-  isPublished Boolean      @default(false)
-  lectureId   String
-  createdAt   DateTime     @default(now())
-  lecture     Lecture      @relation(fields: [lectureId], references: [id], onDelete: Cascade)
-  results     ExamResult[]
-  questions   Question[]
+  id               String               @id @default(cuid())
+  title            String
+  duration         Int
+  totalMarks       Int
+  isPublished      Boolean              @default(false)
+  availabilityMode ExamAvailabilityMode @default(IMMEDIATELY)
+  availableFrom    DateTime?
+  lectureId        String
+  createdAt        DateTime             @default(now())
+  lecture          Lecture              @relation(fields: [lectureId], references: [id], onDelete: Cascade)
+  results          ExamResult[]
+  questions        Question[]
 }
 
 model Question {

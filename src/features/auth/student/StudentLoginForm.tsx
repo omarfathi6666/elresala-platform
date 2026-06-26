@@ -38,7 +38,7 @@ export default function StudentLoginForm() {
       router.push("/dashboard");
       router.refresh();
     } catch {
-      setError("حدث خطأ أثناء تسجيل الدخول");
+      setError("Something went wrong.");
     } finally {
       setLoading(false);
     }

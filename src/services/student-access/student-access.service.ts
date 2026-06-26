@@ -1,6 +1,18 @@
 import StudentRepository from "@/repositories/student/student.repository";
 import { StudentAccessRepository } from "@/repositories/student-access";
 
+type ExamAvailabilityMode =
+  | "IMMEDIATELY"
+  | "AFTER_LECTURE_COMPLETION"
+  | "SPECIFIC_DATE"
+  | "HIDDEN";
+
+interface ExamVisibilityShape {
+  lectureId: string;
+  availabilityMode: ExamAvailabilityMode;
+  availableFrom: Date | null;
+}
+
 interface AccessMap {
   courseIds: string[];
   chapterIds: string[];
@@ -10,6 +22,44 @@ interface AccessMap {
 export class StudentAccessService {
   private static unique(values: string[]) {
     return Array.from(new Set(values));
+  }
+
+  private static isExamVisible(
+    exam: ExamVisibilityShape,
+    now: Date,
+    completedLectureIds: Set<string>
+  ) {
+    if (exam.availabilityMode === "HIDDEN") {
+      return false;
+    }
+
+    if (
+      exam.availabilityMode ===
+      "AFTER_LECTURE_COMPLETION"
+    ) {
+      return completedLectureIds.has(exam.lectureId);
+    }
+
+    if (exam.availabilityMode === "SPECIFIC_DATE") {
+      if (!exam.availableFrom) {
+        return false;
+      }
+
+      return exam.availableFrom <= now;
+    }
+
+    return true;
+  }
+
+  private static async getCompletedLectureIds(studentId: string) {
+    const results =
+      await StudentAccessRepository.findExamResultsByStudentId(
+        studentId
+      );
+
+    return new Set(
+      results.map((result) => result.exam.lectureId)
+    );
   }
 
   static async getAccessMap(studentId: string): Promise<AccessMap> {
@@ -97,7 +147,7 @@ export class StudentAccessService {
     const student = await StudentRepository.findById(studentId);
 
     if (!student) {
-      throw new Error("الطالب غير موجود");
+      throw new Error("Student not found.");
     }
 
     const map = await this.getAccessMap(studentId);
@@ -228,9 +278,14 @@ export class StudentAccessService {
       .filter((chapter) => map.chapterIds.includes(chapter.id))
       .map((chapter) => ({
         ...chapter,
-        lectures: chapter.lectures.filter((lecture) =>
-          map.lectureIds.includes(lecture.id)
-        ),
+        lectures: chapter.lectures
+          .filter((lecture) =>
+            map.lectureIds.includes(lecture.id)
+          )
+          .map((lecture) => ({
+            ...lecture,
+            exams: lecture.exams,
+          })),
       }))
       .filter((chapter) => chapter.lectures.length > 0);
 
@@ -241,20 +296,34 @@ export class StudentAccessService {
       }))
     );
 
-    const exams = chapters.flatMap((chapter) =>
-      chapter.lectures.flatMap((lecture) =>
-        lecture.exams.map((exam) => ({
-          ...exam,
-          lecture,
-          chapter,
-        }))
-      )
-    );
-
     const examResults =
       await StudentAccessRepository.findExamResultsByStudentId(
         studentId
       );
+
+    const completedLectureIds = new Set(
+      examResults.map((result) => result.exam.lectureId)
+    );
+
+    const now = new Date();
+
+    const exams = chapters.flatMap((chapter) =>
+      chapter.lectures.flatMap((lecture) =>
+        lecture.exams
+          .filter((exam) =>
+            this.isExamVisible(
+              exam,
+              now,
+              completedLectureIds
+            )
+          )
+          .map((exam) => ({
+            ...exam,
+            lecture,
+            chapter,
+          }))
+      )
+    );
 
     const courseResults = examResults.filter(
       (result) =>
@@ -296,9 +365,22 @@ export class StudentAccessService {
       return null;
     }
 
-    const lectures = chapter.lectures.filter((lecture) =>
-      map.lectureIds.includes(lecture.id)
-    );
+    const completedLectureIds =
+      await this.getCompletedLectureIds(studentId);
+    const now = new Date();
+
+    const lectures = chapter.lectures
+      .filter((lecture) => map.lectureIds.includes(lecture.id))
+      .map((lecture) => ({
+        ...lecture,
+        exams: lecture.exams.filter((exam) =>
+          this.isExamVisible(
+            exam,
+            now,
+            completedLectureIds
+          )
+        ),
+      }));
 
     return {
       chapter,
@@ -317,9 +399,29 @@ export class StudentAccessService {
       return null;
     }
 
-    return StudentAccessRepository.findLectureWithContent(
-      lectureId
-    );
+    const lecture =
+      await StudentAccessRepository.findLectureWithContent(
+        lectureId
+      );
+
+    if (!lecture) {
+      return null;
+    }
+
+    const completedLectureIds =
+      await this.getCompletedLectureIds(studentId);
+    const now = new Date();
+
+    return {
+      ...lecture,
+      exams: lecture.exams.filter((exam) =>
+        this.isExamVisible(
+          exam,
+          now,
+          completedLectureIds
+        )
+      ),
+    };
   }
 
   static async getAllowedLectures(studentId: string) {
@@ -344,8 +446,17 @@ export class StudentAccessService {
   static async getAllowedExams(studentId: string) {
     const map = await this.getAccessMap(studentId);
 
-    return StudentAccessRepository.findExamsByLectureIds(
-      map.lectureIds
+    const completedLectureIds =
+      await this.getCompletedLectureIds(studentId);
+    const now = new Date();
+
+    const exams =
+      await StudentAccessRepository.findExamsByLectureIds(
+        map.lectureIds
+      );
+
+    return exams.filter((exam) =>
+      this.isExamVisible(exam, now, completedLectureIds)
     );
   }
 
@@ -362,7 +473,20 @@ export class StudentAccessService {
     }
 
     if (!map.lectureIds.includes(exam.lectureId)) {
-      return null;
+      throw new Error("Access denied.");
+    }
+
+    const completedLectureIds =
+      await this.getCompletedLectureIds(studentId);
+
+    if (
+      !this.isExamVisible(
+        exam,
+        new Date(),
+        completedLectureIds
+      )
+    ) {
+      throw new Error("Exam not available.");
     }
 
     return exam;

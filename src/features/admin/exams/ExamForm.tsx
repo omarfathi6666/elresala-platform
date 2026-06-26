@@ -6,6 +6,12 @@ interface ExamInitialData {
   title: string;
   duration: number;
   totalMarks: number;
+  availabilityMode:
+    | "IMMEDIATELY"
+    | "AFTER_LECTURE_COMPLETION"
+    | "SPECIFIC_DATE"
+    | "HIDDEN";
+  availableFrom?: string | null;
 }
 
 interface ExamFormProps {
@@ -30,6 +36,19 @@ export default function ExamForm({
   const [totalMarks, setTotalMarks] = useState(
     initialData?.totalMarks || 100
   );
+  const [availabilityMode, setAvailabilityMode] = useState<
+    "IMMEDIATELY" |
+    "AFTER_LECTURE_COMPLETION" |
+    "SPECIFIC_DATE" |
+    "HIDDEN"
+  >(initialData?.availabilityMode || "IMMEDIATELY");
+  const [availableFrom, setAvailableFrom] = useState(
+    initialData?.availableFrom
+      ? new Date(initialData.availableFrom)
+          .toISOString()
+          .slice(0, 16)
+      : ""
+  );
   const [loading, setLoading] = useState(false);
 
   async function submit(e: React.FormEvent) {
@@ -50,6 +69,13 @@ export default function ExamForm({
           duration,
           totalMarks,
           lectureId,
+          availabilityMode,
+          availableFrom:
+            availabilityMode === "SPECIFIC_DATE"
+              ? (availableFrom
+                  ? new Date(availableFrom).toISOString()
+                  : null)
+              : null,
         }),
       }
     );
@@ -65,6 +91,8 @@ export default function ExamForm({
     setTitle("");
     setDuration(40);
     setTotalMarks(100);
+    setAvailabilityMode("IMMEDIATELY");
+    setAvailableFrom("");
     setLoading(false);
     onSuccess?.();
   }
@@ -104,6 +132,68 @@ export default function ExamForm({
           onChange={(e) => setTotalMarks(Number(e.target.value))}
         />
 
+      </div>
+
+      <div className="mt-8 space-y-4">
+        <h3 className="text-xl font-black">Availability</h3>
+
+        <label className="flex items-center gap-3">
+          <input
+            type="radio"
+            name="availabilityMode"
+            value="IMMEDIATELY"
+            checked={availabilityMode === "IMMEDIATELY"}
+            onChange={() => setAvailabilityMode("IMMEDIATELY")}
+          />
+          <span>Immediately</span>
+        </label>
+
+        <label className="flex items-center gap-3">
+          <input
+            type="radio"
+            name="availabilityMode"
+            value="AFTER_LECTURE_COMPLETION"
+            checked={availabilityMode === "AFTER_LECTURE_COMPLETION"}
+            onChange={() =>
+              setAvailabilityMode(
+                "AFTER_LECTURE_COMPLETION"
+              )
+            }
+          />
+          <span>After completing the lecture</span>
+        </label>
+
+        <label className="flex items-center gap-3">
+          <input
+            type="radio"
+            name="availabilityMode"
+            value="SPECIFIC_DATE"
+            checked={availabilityMode === "SPECIFIC_DATE"}
+            onChange={() => setAvailabilityMode("SPECIFIC_DATE")}
+          />
+          <span>Specific date & time</span>
+        </label>
+
+        {availabilityMode === "SPECIFIC_DATE" ? (
+          <input
+            type="datetime-local"
+            className="w-full rounded-2xl border p-4 md:w-auto"
+            value={availableFrom}
+            onChange={(e) => setAvailableFrom(e.target.value)}
+            required
+          />
+        ) : null}
+
+        <label className="flex items-center gap-3">
+          <input
+            type="radio"
+            name="availabilityMode"
+            value="HIDDEN"
+            checked={availabilityMode === "HIDDEN"}
+            onChange={() => setAvailabilityMode("HIDDEN")}
+          />
+          <span>Hidden</span>
+        </label>
       </div>
 
       <button

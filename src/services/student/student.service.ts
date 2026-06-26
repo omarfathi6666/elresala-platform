@@ -6,6 +6,7 @@ export interface StudentRegisterDto {
   phone: string;
   email?: string;
   password: string;
+  confirmPassword?: string;
   governorate: string;
   grade: string;
   parentPhone?: string;
@@ -36,21 +37,62 @@ export interface StudentProfileSummary {
 }
 
 export class StudentService {
+  private static normalizePhone(phone?: string) {
+    return phone?.trim();
+  }
+
+  private static isValidPhone(phone: string) {
+    return /^01\d{9}$/.test(phone);
+  }
+
   static async register(data: StudentRegisterDto) {
+    const phone = this.normalizePhone(data.phone);
+    const parentPhone = this.normalizePhone(data.parentPhone);
+
+    if (!phone || !this.isValidPhone(phone)) {
+      throw new Error("Invalid phone number.");
+    }
+
+    if (
+      parentPhone &&
+      !this.isValidPhone(parentPhone)
+    ) {
+      throw new Error("Invalid phone number.");
+    }
+
+    if (
+      data.confirmPassword !== undefined &&
+      data.password !== data.confirmPassword
+    ) {
+      throw new Error("Passwords do not match.");
+    }
+
+    const existingByPhone =
+      await StudentRepository.findByPhone(phone);
+
+    if (existingByPhone) {
+      throw new Error("Student already exists.");
+    }
+
     if (data.email) {
       const existingStudent = await StudentRepository.findByEmail(
         data.email
       );
 
       if (existingStudent) {
-        throw new Error("البريد الإلكتروني مستخدم بالفعل");
+        throw new Error("Student already exists.");
       }
     }
 
     const hashedPassword = await hashPassword(data.password);
 
     return StudentRepository.create({
-      ...data,
+      name: data.name,
+      phone,
+      email: data.email,
+      parentPhone,
+      governorate: data.governorate,
+      grade: data.grade,
       password: hashedPassword,
     });
   }
@@ -60,13 +102,17 @@ export class StudentService {
     const password = data.password;
 
     if (!phone || !password) {
-      throw new Error("البريد الإلكتروني أو كلمة المرور غير صحيحة");
+      throw new Error("Invalid phone or password.");
+    }
+
+    if (!this.isValidPhone(phone)) {
+      throw new Error("Invalid phone number.");
     }
 
     const student = await StudentRepository.findByPhone(phone);
 
     if (!student) {
-      throw new Error("البريد الإلكتروني أو كلمة المرور غير صحيحة");
+      throw new Error("Invalid phone or password.");
     }
 
     const validPassword = await verifyPassword(
@@ -75,7 +121,7 @@ export class StudentService {
     );
 
     if (!validPassword) {
-      throw new Error("البريد الإلكتروني أو كلمة المرور غير صحيحة");
+      throw new Error("Invalid phone or password.");
     }
 
     return student;
@@ -87,7 +133,7 @@ export class StudentService {
     const student = await StudentRepository.findById(studentId);
 
     if (!student) {
-      throw new Error("الطالب غير موجود");
+      throw new Error("Student not found.");
     }
 
     const examsCount =
@@ -112,7 +158,7 @@ export class StudentService {
       );
 
     if (!profile) {
-      throw new Error("الطالب غير موجود");
+      throw new Error("Student not found.");
     }
 
     const examsCount =

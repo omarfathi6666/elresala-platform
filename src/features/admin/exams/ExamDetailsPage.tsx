@@ -12,6 +12,12 @@ interface Exam {
   title: string;
   duration: number;
   totalMarks: number;
+  availabilityMode:
+    | "IMMEDIATELY"
+    | "AFTER_LECTURE_COMPLETION"
+    | "SPECIFIC_DATE"
+    | "HIDDEN";
+  availableFrom?: string | null;
   questions: ExamQuestion[];
 }
 
@@ -228,6 +234,8 @@ export default function ExamDetailsPage({
                 title: exam.title,
                 duration: exam.duration,
                 totalMarks: exam.totalMarks,
+                availabilityMode: exam.availabilityMode,
+                availableFrom: exam.availableFrom,
               }}
               onSuccess={async () => {
                 setShowEditExamForm(false);

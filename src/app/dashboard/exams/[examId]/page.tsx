@@ -19,11 +19,30 @@ export default async function Page({ params }: PageProps) {
     notFound();
   }
 
-  const exam =
-    await StudentAccessService.getExamPageData(
+  let exam = null;
+  let accessError = "";
+
+  try {
+    exam = await StudentAccessService.getExamPageData(
       session.studentId,
       examId
     );
+  } catch (error) {
+    accessError =
+      error instanceof Error
+        ? error.message
+        : "Something went wrong.";
+  }
+
+  if (accessError) {
+    return (
+      <DashboardLayout>
+        <div className="rounded-2xl bg-white p-6 text-slate-700 shadow-sm">
+          {accessError}
+        </div>
+      </DashboardLayout>
+    );
+  }
 
   if (!exam) {
     notFound();

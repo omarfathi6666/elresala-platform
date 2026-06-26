@@ -9,20 +9,20 @@ export async function POST(request: Request) {
     const token = await getSession();
 
     if (!token) {
-      return fail("يجب تسجيل الدخول أولاً", 401);
+      return fail("Unauthorized.", 401);
     }
 
     const payload = await verifyToken(token);
 
     if (payload.role !== "STUDENT") {
-      return fail("غير مصرح", 403);
+      return fail("Access denied.", 403);
     }
 
     const body = await request.json();
     const code = body.code?.trim();
 
     if (!code) {
-      return fail("يرجى إدخال كود الاشتراك", 400);
+      return fail("Invalid activation code.", 400);
     }
 
     const activation =
@@ -33,7 +33,7 @@ export async function POST(request: Request) {
 
     return success(
       activation,
-      "تم تفعيل الكود بنجاح"
+      "Activation successful."
     );
   });
 }
