@@ -32,6 +32,10 @@ interface SubmitExamDto {
 }
 
 export class StudentAccessService {
+  private static normalizeAnswer(value: string) {
+    return value.trim().toUpperCase();
+  }
+
   private static unique(values: string[]) {
     return Array.from(new Set(values));
   }
@@ -574,6 +578,57 @@ export class StudentAccessService {
     };
   }
 
+  static async getExamReviewPageData(
+    studentId: string,
+    examId: string
+  ) {
+    const exam = await this.getExamPageData(studentId, examId);
+
+    if (!exam) {
+      return null;
+    }
+
+    const latestResult =
+      await StudentAccessRepository.findLatestExamResult(
+        studentId,
+        examId
+      );
+
+    if (!latestResult) {
+      return {
+        exam,
+        latestResult: null,
+        reviewItems: [],
+      };
+    }
+
+    const answersByQuestionId = new Map(
+      latestResult.answers.map((answer) => [
+        answer.questionId,
+        answer,
+      ])
+    );
+
+    const reviewItems = exam.questions.map((question) => {
+      const answer = answersByQuestionId.get(question.id);
+
+      return {
+        id: question.id,
+        question: question.question,
+        explanation: question.explanation,
+        studentAnswer: answer?.studentAnswer ?? "-",
+        correctAnswer: question.correctAnswer,
+        isCorrect: answer?.isCorrect ?? false,
+      };
+    });
+
+    return {
+      exam,
+      latestResult,
+      reviewItems,
+    };
+  }
+
   static async submitExam(
     studentId: string,
     data: SubmitExamDto
@@ -604,16 +659,25 @@ export class StudentAccessService {
       ])
     );
 
-    const score = Object.entries(data.answers).reduce(
-      (sum, [questionId, answer]) => {
-        const expected = correctAnswers.get(questionId);
+    const answerRows = exam.questions.map((question) => {
+      const expectedRaw =
+        correctAnswers.get(question.id) ?? "";
+      const expected = this.normalizeAnswer(expectedRaw);
+      const studentRaw = data.answers[question.id] ?? "";
+      const student = this.normalizeAnswer(studentRaw);
+      const isCorrect = student !== "" && student === expected;
 
-        return expected && expected === answer
-          ? sum + 1
-          : sum;
-      },
-      0
-    );
+      return {
+        questionId: question.id,
+        studentAnswer: student,
+        correctAnswer: expected,
+        isCorrect,
+      };
+    });
+
+    const score = answerRows.filter(
+      (item) => item.isCorrect
+    ).length;
 
     const now = new Date();
 
@@ -624,6 +688,7 @@ export class StudentAccessService {
       total: exam.questions.length,
       startedAt: now,
       submittedAt: now,
+      answers: answerRows,
     });
   }
 }

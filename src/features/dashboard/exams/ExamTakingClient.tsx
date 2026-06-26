@@ -34,10 +34,10 @@ export default function ExamTakingClient({
     }
 
     return [
-      currentQuestion.choiceA,
-      currentQuestion.choiceB,
-      currentQuestion.choiceC,
-      currentQuestion.choiceD,
+      { key: "A", value: currentQuestion.choiceA },
+      { key: "B", value: currentQuestion.choiceB },
+      { key: "C", value: currentQuestion.choiceC },
+      { key: "D", value: currentQuestion.choiceD },
     ];
   }, [currentQuestion]);
 
@@ -93,22 +93,22 @@ export default function ExamTakingClient({
       <div className="space-y-3">
         {currentChoices.map((choice) => (
           <label
-            key={choice}
+            key={choice.key}
             className="flex cursor-pointer items-center gap-3 rounded-2xl border border-slate-200 p-4"
           >
             <input
               type="radio"
               name={currentQuestion.id}
-              value={choice}
-              checked={answers[currentQuestion.id] === choice}
+              value={choice.key}
+              checked={answers[currentQuestion.id] === choice.key}
               onChange={() => {
                 setAnswers((prev) => ({
                   ...prev,
-                  [currentQuestion.id]: choice,
+                  [currentQuestion.id]: choice.key,
                 }));
               }}
             />
-            <span>{choice}</span>
+            <span>{choice.value}</span>
           </label>
         ))}
       </div>

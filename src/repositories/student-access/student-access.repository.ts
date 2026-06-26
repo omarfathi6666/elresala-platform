@@ -292,6 +292,9 @@ class StudentAccessRepository {
         studentId,
         examId,
       },
+      include: {
+        answers: true,
+      },
       orderBy: {
         submittedAt: "desc",
       },
@@ -305,9 +308,28 @@ class StudentAccessRepository {
     total: number;
     startedAt: Date;
     submittedAt: Date;
+    answers: {
+      questionId: string;
+      studentAnswer: string;
+      correctAnswer: string;
+      isCorrect: boolean;
+    }[];
   }) {
     return prisma.examResult.create({
-      data,
+      data: {
+        studentId: data.studentId,
+        examId: data.examId,
+        score: data.score,
+        total: data.total,
+        startedAt: data.startedAt,
+        submittedAt: data.submittedAt,
+        answers: {
+          create: data.answers,
+        },
+      },
+      include: {
+        answers: true,
+      },
     });
   }
 }

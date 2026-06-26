@@ -1,5 +1,6 @@
 import DashboardLayout from "@/features/dashboard/layout";
 import { notFound, redirect } from "next/navigation";
+import Link from "next/link";
 import { getStudentSession } from "@/lib/auth/student-session";
 import { StudentAccessService } from "@/services/student-access";
 import Breadcrumbs from "@/features/dashboard/shared/Breadcrumbs";
@@ -54,6 +55,9 @@ export default async function Page({ params }: PageProps) {
 
   const score = data.latestResult.score;
   const total = data.latestResult.total;
+  const correctAnswers = score;
+  const wrongAnswers = Math.max(0, total - score);
+  const totalQuestions = total;
   const percentage =
     total > 0 ? Math.round((score / total) * 100) : 0;
 
@@ -92,7 +96,7 @@ export default async function Page({ params }: PageProps) {
           </p>
         </div>
 
-        <div className="grid gap-4 md:grid-cols-3">
+        <div className="grid gap-4 md:grid-cols-3 lg:grid-cols-4">
           <div className="rounded-2xl bg-white p-5 shadow-sm">
             <p className="text-slate-500">الدرجة</p>
             <h2 className="mt-2 text-3xl font-black">
@@ -108,6 +112,20 @@ export default async function Page({ params }: PageProps) {
           </div>
 
           <div className="rounded-2xl bg-white p-5 shadow-sm">
+            <p className="text-slate-500">الإجابات الصحيحة</p>
+            <h2 className="mt-2 text-3xl font-black">
+              {correctAnswers}/{totalQuestions}
+            </h2>
+          </div>
+
+          <div className="rounded-2xl bg-white p-5 shadow-sm">
+            <p className="text-slate-500">الإجابات الخاطئة</p>
+            <h2 className="mt-2 text-3xl font-black">
+              {wrongAnswers}
+            </h2>
+          </div>
+
+          <div className="rounded-2xl bg-white p-5 shadow-sm">
             <p className="text-slate-500">تاريخ التسليم</p>
             <h2 className="mt-2 text-lg font-black">
               {data.latestResult
@@ -117,6 +135,15 @@ export default async function Page({ params }: PageProps) {
                 : "-"}
             </h2>
           </div>
+        </div>
+
+        <div>
+          <Link
+            href={`/dashboard/exams/${data.exam.id}/review`}
+            className="inline-block rounded-2xl bg-blue-600 px-6 py-3 font-bold text-white"
+          >
+            Review Answers
+          </Link>
         </div>
       </div>
     </DashboardLayout>

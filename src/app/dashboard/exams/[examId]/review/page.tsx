@@ -1,5 +1,5 @@
 import DashboardLayout from "@/features/dashboard/layout";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { getStudentSession } from "@/lib/auth/student-session";
 import { StudentAccessService } from "@/services/student-access";
 import Breadcrumbs from "@/features/dashboard/shared/Breadcrumbs";
@@ -18,11 +18,11 @@ export default async function Page({ params }: PageProps) {
     notFound();
   }
 
-  let exam = null;
+  let data = null;
   let accessError = "";
 
   try {
-    exam = await StudentAccessService.getExamPageData(
+    data = await StudentAccessService.getExamReviewPageData(
       session.studentId,
       examId
     );
@@ -43,8 +43,12 @@ export default async function Page({ params }: PageProps) {
     );
   }
 
-  if (!exam) {
+  if (!data) {
     notFound();
+  }
+
+  if (!data.latestResult) {
+    redirect(`/dashboard/exams/${examId}`);
   }
 
   return (
@@ -54,20 +58,20 @@ export default async function Page({ params }: PageProps) {
           items={[
             { label: "الرئيسية", href: "/dashboard" },
             {
-              label: exam.lecture.chapter.course.title,
-              href: `/dashboard/courses/${exam.lecture.chapter.course.id}`,
+              label: data.exam.lecture.chapter.course.title,
+              href: `/dashboard/courses/${data.exam.lecture.chapter.course.id}`,
             },
             {
-              label: exam.lecture.chapter.title,
-              href: `/dashboard/chapters/${exam.lecture.chapter.id}`,
+              label: data.exam.lecture.chapter.title,
+              href: `/dashboard/chapters/${data.exam.lecture.chapter.id}`,
             },
             {
-              label: exam.lecture.title,
-              href: `/dashboard/player/${exam.lecture.id}`,
+              label: data.exam.lecture.title,
+              href: `/dashboard/player/${data.exam.lecture.id}`,
             },
             {
-              label: exam.title,
-              href: `/dashboard/exams/${exam.id}`,
+              label: data.exam.title,
+              href: `/dashboard/exams/${data.exam.id}`,
             },
             { label: "المراجعة" },
           ]}
@@ -75,26 +79,45 @@ export default async function Page({ params }: PageProps) {
 
         <div className="rounded-3xl bg-white p-8 shadow-sm">
           <h1 className="text-3xl font-black text-slate-900">
-            مراجعة: {exam.title}
+            مراجعة: {data.exam.title}
           </h1>
           <p className="mt-2 text-slate-500">
-            جميع الأسئلة المتاحة في هذا الامتحان
+            إجابات الطالب مقابل الإجابات الصحيحة
           </p>
         </div>
 
         <div className="space-y-4">
-          {exam.questions.map((question, index) => (
+          {data.reviewItems.map((item, index) => (
             <div
-              key={question.id}
+              key={item.id}
               className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm"
             >
-              <h2 className="font-black text-slate-900">
+              <div className="flex items-center justify-between">
+                <h2 className="font-black text-slate-900">
                 السؤال {index + 1}
-              </h2>
+                </h2>
+                <span className="font-bold text-slate-700">
+                  {item.isCorrect ? "✅ Correct" : "❌ Wrong"}
+                </span>
+              </div>
 
               <p className="mt-3 text-slate-700">
-                {question.question}
+                {item.question}
               </p>
+
+              <p className="mt-3 text-sm text-slate-600">
+                Student answer: {item.studentAnswer}
+              </p>
+
+              <p className="mt-1 text-sm font-semibold text-slate-700">
+                Correct answer: {item.correctAnswer}
+              </p>
+
+              {item.explanation ? (
+                <p className="mt-2 text-sm text-slate-500">
+                  Explanation: {item.explanation}
+                </p>
+              ) : null}
             </div>
           ))}
         </div>

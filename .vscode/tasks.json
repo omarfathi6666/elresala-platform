@@ -10,6 +10,56 @@
 				"npm.cmd run build >nul 2>nul & echo EXITCODE:%ERRORLEVEL%"
 			],
 			"isBackground": false
+		},
+		{
+			"label": "task014-db-exec-exam-result-answers",
+			"type": "shell",
+			"command": "cmd",
+			"args": [
+				"/c",
+				"npx.cmd prisma db execute --file prisma/migrations/20260626143000_exam_result_answers/migration.sql --schema prisma/schema.prisma"
+			],
+			"problemMatcher": []
+		},
+		{
+			"label": "task014-prisma-generate",
+			"type": "shell",
+			"command": "cmd",
+			"args": [
+				"/c",
+				"npx.cmd prisma generate"
+			],
+			"problemMatcher": []
+		},
+		{
+			"label": "task014-prisma-generate-2",
+			"type": "shell",
+			"command": "cmd",
+			"args": [
+				"/c",
+				"npx.cmd prisma generate"
+			],
+			"problemMatcher": []
+		},
+		{
+			"label": "task014-build-check",
+			"type": "shell",
+			"command": "cmd",
+			"args": [
+				"/c",
+				"npm.cmd run build"
+			],
+			"problemMatcher": []
+		},
+		{
+			"label": "task014-verify-exam-scoring",
+			"type": "shell",
+			"command": "cmd",
+			"args": [
+				"/c",
+				"npx.cmd tsx scripts/verify-exam-scoring.ts"
+			],
+			"problemMatcher": []
 		}
 	]
 }

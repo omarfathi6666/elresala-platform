@@ -105,6 +105,7 @@ model Question {
   examId        String
   createdAt     DateTime @default(now())
   exam          Exam     @relation(fields: [examId], references: [id], onDelete: Cascade)
+  submittedAnswers ExamResultAnswer[]
 }
 
 model Code {
@@ -147,5 +148,21 @@ model ExamResult {
   examId      String
   createdAt   DateTime @default(now())
   exam        Exam     @relation(fields: [examId], references: [id])
+  answers     ExamResultAnswer[]
   student     Student  @relation(fields: [studentId], references: [id])
+}
+
+model ExamResultAnswer {
+  id            String     @id @default(cuid())
+  resultId      String
+  questionId    String
+  studentAnswer String
+  correctAnswer String
+  isCorrect     Boolean
+  createdAt     DateTime   @default(now())
+  question      Question   @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  result        ExamResult @relation(fields: [resultId], references: [id], onDelete: Cascade)
+
+  @@index([resultId])
+  @@index([questionId])
 }
