@@ -691,4 +691,105 @@ export class StudentAccessService {
       answers: answerRows,
     });
   }
+
+  static async getCoursesWithProgress(studentId: string) {
+    const map = await this.getAccessMap(studentId);
+    const allCourses = await StudentAccessRepository.findAllCourses();
+    
+    const coursesWithAccess = allCourses.map((course) => ({
+      ...course,
+      isLocked: !map.courseIds.includes(course.id),
+    }));
+
+    const allChapters = await StudentAccessRepository.findAllChapters();
+    const chaptersByCoursId = new Map<string, typeof allChapters>();
+    
+    for (const chapter of allChapters) {
+      if (!chaptersByCoursId.has(chapter.courseId)) {
+        chaptersByCoursId.set(chapter.courseId, []);
+      }
+      chaptersByCoursId.get(chapter.courseId)!.push(chapter);
+    }
+
+    const allLectures = await StudentAccessRepository.findAllLectures();
+    const lecturesByChapterId = new Map<string, typeof allLectures>();
+    
+    for (const lecture of allLectures) {
+      if (!lecturesByChapterId.has(lecture.chapterId)) {
+        lecturesByChapterId.set(lecture.chapterId, []);
+      }
+      lecturesByChapterId.get(lecture.chapterId)!.push(lecture);
+    }
+
+    const examResults = await StudentAccessRepository.findExamResultsByStudentId(studentId);
+    const completedLectureIds = new Set(
+      examResults.map((result) => result.exam.lectureId)
+    );
+
+    return Promise.all(
+      coursesWithAccess.map(async (course) => {
+        const chapters = chaptersByCoursId.get(course.id) || [];
+        const accessibleChapters = chapters.filter((ch) =>
+          map.chapterIds.includes(ch.id)
+        );
+
+        let totalLectures = 0;
+        let completedLectures = 0;
+        let firstLectureId: string | null = null;
+        let lastWatchedLectureId: string | null = null;
+
+        for (const chapter of accessibleChapters) {
+          const lectures = lecturesByChapterId.get(chapter.id) || [];
+          const accessibleLectures = lectures.filter((lec) =>
+            map.lectureIds.includes(lec.id)
+          );
+
+          for (let i = 0; i < accessibleLectures.length; i++) {
+            const lecture = accessibleLectures[i];
+            totalLectures++;
+
+            if (firstLectureId === null && i === 0) {
+              firstLectureId = lecture.id;
+            }
+
+            if (completedLectureIds.has(lecture.id)) {
+              completedLectures++;
+              lastWatchedLectureId = lecture.id;
+            }
+          }
+        }
+
+        const progress = totalLectures === 0 ? 0 : Math.round((completedLectures / totalLectures) * 100);
+
+        let status: "not-started" | "in-progress" | "completed";
+        if (progress === 0) {
+          status = "not-started";
+        } else if (progress === 100) {
+          status = "completed";
+        } else {
+          status = "in-progress";
+        }
+
+        const lastWatchedLecture = lastWatchedLectureId
+          ? allLectures.find((l) => l.id === lastWatchedLectureId)
+          : null;
+
+        return {
+          id: course.id,
+          title: course.title,
+          description: course.description,
+          order: course.order,
+          isLocked: course.isLocked,
+          chaptersCount: accessibleChapters.length,
+          lecturesCount: totalLectures,
+          completedLecturesCount: completedLectures,
+          progress,
+          status,
+          firstLectureId,
+          lastWatchedLecture,
+          createdAt: course.createdAt,
+        };
+      })
+    );
+  }
 }

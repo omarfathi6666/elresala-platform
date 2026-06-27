@@ -8,8 +8,6 @@ import {
   BookOpen,
   PlayCircle,
   FileText,
-  Trophy,
-  BarChart3,
   User,
   LogOut,
   X,
@@ -35,16 +33,6 @@ const links = [
     title: "الاختبارات",
     href: "/dashboard/exams",
     icon: FileText,
-  },
-  {
-    title: "تقدمي",
-    href: "/dashboard/courses",
-    icon: BarChart3,
-  },
-  {
-    title: "درجاتي",
-    href: "/dashboard/exams",
-    icon: Trophy,
   },
   {
     title: "حسابي",
